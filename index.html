@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>FireServicesExam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0f0e12;
+    --bg-1:#17151b;
+    --bg-2:#201d25;
+    --card:#221f27;
+    --line:#33303a;
+    --text:#f3ede4;
+    --text-dim:#a7a1ad;
+    --ember-1:#ff5a1f;
+    --ember-2:#ff8c1a;
+    --ember-3:#ffbf3d;
+    --deep-red:#b3231c;
+    --good:#3ecf8e;
+    --bad:#ff5d5d;
+    --radius:18px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #2c1810 0%, transparent 60%),
+      var(--bg-0);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding:20px 18px 30px;
+    position:relative;
+  }
+  h1,h2,h3{font-family:'Poppins',sans-serif; margin:0;}
+  .screen{display:none; flex-direction:column; flex:1; animation:fadeIn .35s ease;}
+  .screen.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ---------- Logo ---------- */
+  .logo-wrap{display:flex; flex-direction:column; align-items:center; margin-top:8px; margin-bottom:6px;}
+  .flame{width:78px; height:92px; position:relative;}
+  .flame svg{width:100%; height:100%; display:block; filter:drop-shadow(0 6px 18px rgba(255,90,31,.45));}
+  .flame .core{animation:flicker 2.6s ease-in-out infinite;}
+  .flame .inner{animation:flicker 2.2s ease-in-out infinite reverse;}
+  @keyframes flicker{
+    0%,100%{transform:scale(1) translateY(0);}
+    30%{transform:scale(1.03,0.97) translateY(-1px);}
+    55%{transform:scale(0.97,1.04) translateY(1px);}
+    80%{transform:scale(1.02,0.98) translateY(-0.5px);}
+  }
+  .brand-title{
+    font-weight:900; font-size:1.65rem; letter-spacing:.5px; text-align:center;
+    background:linear-gradient(90deg,var(--ember-3),var(--ember-1) 60%,var(--deep-red));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin-top:6px;
+  }
+  .brand-sub{
+    text-align:center; font-size:.72rem; color:var(--text-dim); letter-spacing:2.5px;
+    text-transform:uppercase; margin-top:2px; font-weight:600;
+  }
+
+  /* ---------- Highscore banner ---------- */
+  .highscore-bar{
+    margin-top:18px;
+    background:linear-gradient(135deg, rgba(255,90,31,.15), rgba(255,191,61,.08));
+    border:1px solid rgba(255,140,26,.35);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .highscore-bar .label{font-size:.68rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-dim); font-weight:700;}
+  .highscore-bar .value{font-family:'Poppins',sans-serif; font-weight:800; font-size:1.6rem; color:var(--ember-3);}
+  .highscore-bar .trophy{font-size:1.5rem;}
+
+  /* ---------- Category cards ---------- */
+  .cat-list{margin-top:20px; display:flex; flex-direction:column; gap:12px;}
+  .cat-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 16px;
+    display:flex; align-items:center; gap:14px;
+    cursor:pointer;
+    transition:transform .15s ease, border-color .15s ease, background .15s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .cat-card:active{transform:scale(0.98);}
+  .cat-card:hover{border-color:var(--ember-2);}
+  .cat-card::after{
+    content:''; position:absolute; right:-30px; top:-30px; width:90px; height:90px;
+    background:radial-gradient(circle, rgba(255,140,26,.18), transparent 70%);
+  }
+  .cat-icon{
+    width:46px; height:46px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+    background:linear-gradient(135deg,var(--ember-1),var(--deep-red));
+  }
+  .cat-info{flex:1;}
+  .cat-info .name{font-family:'Poppins',sans-serif; font-weight:700; font-size:1.02rem;}
+  .cat-info .meta{font-size:.76rem; color:var(--text-dim); margin-top:2px;}
+  .cat-best{font-size:.72rem; color:var(--ember-3); font-weight:700; margin-top:4px;}
+  .chevron{color:var(--text-dim); font-size:1.3rem;}
+
+  .disclaimer{
+    margin-top:22px; font-size:.68rem; line-height:1.5; color:var(--text-dim);
+    text-align:center; padding:0 6px;
+  }
+
+  .footer-credit{
+    margin-top:auto; padding-top:22px; text-align:center;
+    font-size:.68rem; color:#6b6672; letter-spacing:.5px;
+  }
+  .footer-credit b{color:var(--ember-2);}
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .back-btn{
+    background:none; border:none; color:var(--text-dim); font-size:1.4rem; cursor:pointer; padding:4px 8px;
+  }
+  .quiz-cat-label{font-family:'Poppins',sans-serif; font-weight:700; font-size:.95rem;}
+  .progress-track{
+    width:100%; height:7px; background:var(--bg-2); border-radius:10px; overflow:hidden; margin:10px 0 6px;
+  }
+  .progress-fill{
+    height:100%; border-radius:10px;
+    background:linear-gradient(90deg,var(--ember-1),var(--ember-3));
+    transition:width .3s ease;
+  }
+  .progress-text{font-size:.72rem; color:var(--text-dim); text-align:right; margin-bottom:14px;}
+
+  .question-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 18px; flex:1; display:flex; flex-direction:column;
+  }
+  .q-number{
+    font-size:.7rem; color:var(--ember-3); font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px;
+  }
+  .q-text{font-family:'Poppins',sans-serif; font-weight:600; font-size:1.08rem; line-height:1.45; margin-bottom:18px;}
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .option-btn{
+    text-align:left; background:var(--bg-2); border:1.5px solid var(--line); color:var(--text);
+    padding:13px 14px; border-radius:13px; font-size:.92rem; font-family:'Inter',sans-serif; font-weight:500;
+    cursor:pointer; display:flex; align-items:center; gap:10px; transition:all .15s ease;
+  }
+  .option-btn .letter{
+    width:24px; height:24px; border-radius:7px; background:var(--bg-1); display:flex; align-items:center;
+    justify-content:center; font-size:.72rem; font-weight:700; color:var(--text-dim); flex-shrink:0;
+  }
+  .option-btn:active{transform:scale(0.98);}
+  .option-btn.selected{
+    border-color:var(--ember-2); background:rgba(255,140,26,.14);
+  }
+  .option-btn.selected .letter{background:var(--ember-1); color:#1a1006;}
+
+  .nav-row{display:flex; gap:10px; margin-top:16px;}
+  .nav-btn{
+    flex:1; padding:13px 0; border-radius:13px; border:none; font-family:'Poppins',sans-serif;
+    font-weight:700; font-size:.85rem; cursor:pointer; transition:opacity .15s ease, transform .1s ease;
+  }
+  .nav-btn:active{transform:scale(0.97);}
+  .nav-btn.ghost{background:var(--bg-2); color:var(--text); border:1px solid var(--line);}
+  .nav-btn.primary{background:linear-gradient(90deg,var(--ember-1),var(--ember-2)); color:#1a1006;}
+  .nav-btn:disabled{opacity:.35; cursor:default;}
+  .review-link{
+    text-align:center; margin-top:12px; font-size:.78rem; color:var(--ember-3); font-weight:700;
+    cursor:pointer; text-decoration:underline; text-underline-offset:3px;
+  }
+
+  /* ---------- Review grid ---------- */
+  .review-grid{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin:14px 0 18px;
+  }
+  .review-cell{
+    aspect-ratio:1; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    font-size:.75rem; font-weight:700; cursor:pointer; border:1.5px solid var(--line); background:var(--bg-2); color:var(--text-dim);
+  }
+  .review-cell.answered{background:rgba(62,207,142,.14); border-color:var(--good); color:var(--good);}
+  .review-cell.current{outline:2px solid var(--ember-2); outline-offset:1px;}
+  .review-summary{font-size:.82rem; color:var(--text-dim); text-align:center; margin-bottom:6px;}
+
+  /* ---------- Results ---------- */
+  .score-ring-wrap{display:flex; justify-content:center; margin:18px 0 8px;}
+  .score-ring{
+    width:170px; height:170px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .score-ring .pct{font-family:'Poppins',sans-serif; font-weight:900; font-size:2.1rem;}
+  .score-ring .pct-sub{font-size:.7rem; color:var(--text-dim); font-weight:600; letter-spacing:1px;}
+  .score-msg{text-align:center; font-family:'Poppins',sans-serif; font-weight:700; margin:8px 0 4px; font-size:1.05rem;}
+  .score-detail{text-align:center; font-size:.8rem; color:var(--text-dim); margin-bottom:16px;}
+  .new-best-badge{
+    display:block; text-align:center; margin:0 auto 14px; padding:6px 14px; border-radius:20px;
+    background:linear-gradient(90deg,var(--ember-1),var(--ember-3)); color:#1a1006; font-weight:800;
+    font-size:.75rem; width:fit-content;
+  }
+  .answer-review-item{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 14px; margin-bottom:10px;
+  }
+  .answer-review-item .qi-num{font-size:.68rem; color:var(--text-dim); font-weight:700; letter-spacing:1px; margin-bottom:4px;}
+  .answer-review-item .qi-q{font-weight:600; font-size:.92rem; margin-bottom:8px; line-height:1.4;}
+  .qi-row{font-size:.82rem; margin-bottom:3px; display:flex; gap:6px;}
+  .qi-row .tag{font-weight:700; flex-shrink:0;}
+  .qi-row.correct .tag, .qi-row.correct .val{color:var(--good);}
+  .qi-row.wrong .tag, .qi-row.wrong .val{color:var(--bad);}
+  .qi-row.given.correct-answer .val{color:var(--good);}
+
+  .result-actions{display:flex; flex-direction:column; gap:10px; margin-top:16px; margin-bottom:8px;}
+  .big-btn{
+    padding:15px 0; border-radius:14px; border:none; font-family:'Poppins',sans-serif; font-weight:700;
+    font-size:.95rem; cursor:pointer;
+  }
+  .big-btn.primary{background:linear-gradient(90deg,var(--ember-1),var(--ember-2)); color:#1a1006;}
+  .big-btn.ghost{background:var(--bg-2); border:1px solid var(--line); color:var(--text);}
+
+  ::-webkit-scrollbar{width:0px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME SCREEN -->
+  <section id="screen-home" class="screen active">
+    <div class="logo-wrap">
+      <div class="flame">
+        <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="core" d="M50 6C40 26 20 34 20 60C20 84 34 100 50 100C66 100 80 84 80 60C80 44 70 38 66 26C64 34 58 40 52 40C44 40 42 30 46 18C44 20 38 24 34 32C36 20 44 10 50 6Z" fill="url(#g1)"/>
+          <path class="inner" d="M50 44C45 54 38 58 38 70C38 82 43 90 50 90C57 90 62 82 62 70C62 62 57 58 55 52C54 57 51 60 48 60C44 60 43 54 46 47C45 48 42 50 40 54C41 48 45 47 50 44Z" fill="url(#g2)"/>
+          <defs>
+            <linearGradient id="g1" x1="20" y1="6" x2="80" y2="100" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ffbf3d"/><stop offset="0.45" stop-color="#ff8c1a"/><stop offset="1" stop-color="#b3231c"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="38" y1="44" x2="62" y2="90" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#fff3c4"/><stop offset="1" stop-color="#ff8c1a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="brand-title">FireServicesExam</div>
+      <div class="brand-sub">T&amp;T Fire Service Entrance Prep</div>
+    </div>
+
+    <div class="highscore-bar">
+      <div>
+        <div class="label">Highest score overall</div>
+        <div class="value" id="home-highscore">—</div>
+      </div>
+      <div class="trophy">🏆</div>
+    </div>
+
+    <div class="cat-list" id="cat-list"></div>
+
+    <p class="disclaimer">Questions are original practice material written to reflect the Math, English &amp; General Knowledge topics covered in the T&amp;T Fire Service entrance exam. They are not official leaked or copyrighted past-paper questions.</p>
+
+    <div class="footer-credit">BuiltbyPawi</div>
+  </section>
+
+  <!-- QUIZ SCREEN -->
+  <section id="screen-quiz" class="screen">
+    <div class="quiz-top">
+      <button class="back-btn" id="quiz-home-btn">←</button>
+      <div class="quiz-cat-label" id="quiz-cat-label">Math</div>
+      <div style="width:28px;"></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-text" id="progress-text">Question 1 of 40</div>
+
+    <div class="question-card">
+      <div class="q-number" id="q-number">QUESTION 1</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options-container"></div>
+      <div style="flex:1;"></div>
+      <div class="nav-row">
+        <button class="nav-btn ghost" id="prev-btn">← Previous</button>
+        <button class="nav-btn ghost" id="skip-btn">Skip →</button>
+      </div>
+      <div class="review-link" id="review-link-btn">Review all answers</div>
+    </div>
+  </section>
+
+  <!-- REVIEW SCREEN -->
+  <section id="screen-review" class="screen">
+    <div class="quiz-top">
+      <button class="back-btn" id="review-back-btn">←</button>
+      <div class="quiz-cat-label">Review</div>
+      <div style="width:28px;"></div>
+    </div>
+    <div class="review-summary" id="review-summary"></div>
+    <div class="review-grid" id="review-grid"></div>
+    <div style="flex:1;"></div>
+    <button class="big-btn primary" id="submit-btn">Submit &amp; Get Graded</button>
+  </section>
+
+  <!-- RESULTS SCREEN -->
+  <section id="screen-results" class="screen">
+    <h2 style="text-align:center; margin-top:6px; margin-bottom:2px; font-size:1.2rem;">Results</h2>
+    <div id="new-best-container"></div>
+    <div class="score-ring-wrap">
+      <div class="score-ring" id="score-ring">
+        <div style="text-align:center;">
+          <div class="pct" id="score-pct">0%</div>
+          <div class="pct-sub" id="score-fraction">0 / 0</div>
+        </div>
+      </div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-detail" id="score-detail"></div>
+    <div id="answer-review-list"></div>
+    <div class="result-actions">
+      <button class="big-btn primary" id="try-again-btn">🔥 Try Again — New Test</button>
+      <button class="big-btn ghost" id="results-home-btn">Back to Home</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* =====================================================
+   FireServicesExam — data + logic
+   ===================================================== */
+
+const QUESTION_BANKS = {
+  math: [
+    {q:"7 + 8 × 2 = ?", options:["23","30","15","45"], correct:"23"},
+    {q:"Simplify: 3/4 + 1/8", options:["7/8","1","5/8","4/12"], correct:"7/8"},
+    {q:"What is 25% of 200?", options:["50","25","75","100"], correct:"50"},
+    {q:"A ladder is 12m long and reaches 3/4 of the way up a building. How tall is the building?", options:["16m","15m","9m","12m"], correct:"16m"},
+    {q:"Solve for x: 2x + 5 = 17", options:["6","5","7","8"], correct:"6"},
+    {q:"What is the perimeter of a rectangle 8m by 5m?", options:["26m","40m","13m","20m"], correct:"26m"},
+    {q:"A fire truck travels 60km in 1.5 hours. What is its average speed?", options:["40km/h","45km/h","90km/h","30km/h"], correct:"40km/h"},
+    {q:"Convert 3/5 to a percentage.", options:["60%","35%","53%","65%"], correct:"60%"},
+    {q:"What is 15 × 4?", options:["60","45","50","64"], correct:"60"},
+    {q:"Simplify the ratio 12:16", options:["3:4","4:3","6:8","2:3"], correct:"3:4"},
+    {q:"What is the square root of 144?", options:["12","14","11","16"], correct:"12"},
+    {q:"A hose fills a tank at 20L per minute. How long to fill 500L?", options:["25 minutes","20 minutes","30 minutes","15 minutes"], correct:"25 minutes"},
+    {q:"What is 7² − 3²?", options:["40","58","16","49"], correct:"40"},
+    {q:"Round 486 to the nearest hundred.", options:["500","400","490","480"], correct:"500"},
+    {q:"What is 1/4 of 88?", options:["22","20","24","18"], correct:"22"},
+    {q:"Find the average of 4, 8, 12, and 16.", options:["10","12","8","14"], correct:"10"},
+    {q:"A 250L tank is 40% full. How many litres does it hold?", options:["100L","90L","110L","150L"], correct:"100L"},
+    {q:"Simplify 9/12.", options:["3/4","2/3","4/5","5/6"], correct:"3/4"},
+    {q:"What is 6 × 7 − 5?", options:["37","42","32","47"], correct:"37"},
+    {q:"Convert 0.75 to a fraction.", options:["3/4","3/5","7/10","4/5"], correct:"3/4"},
+    {q:"A rectangular room is 6m by 4m. What is its area?", options:["24 sq m","20 sq m","10 sq m","28 sq m"], correct:"24 sq m"},
+    {q:"What is 100 ÷ 4 + 6?", options:["31","25","29","19"], correct:"31"},
+    {q:"Find 20% of 150.", options:["30","25","35","20"], correct:"30"},
+    {q:"If TT$1 = 100 cents, how many cents are in TT$4.50?", options:["450","45","405","540"], correct:"450"},
+    {q:"Simplify: 2/3 × 3/4", options:["1/2","3/4","2/4","1/3"], correct:"1/2"},
+    {q:"What comes next in the sequence: 2, 4, 8, 16, __?", options:["32","24","30","20"], correct:"32"},
+    {q:"A firefighter earns TT$18 per hour working a 40-hour week. What is the weekly pay?", options:["TT$720","TT$700","TT$760","TT$680"], correct:"TT$720"},
+    {q:"Solve for x: 3x − 4 = 11", options:["5","4","6","7"], correct:"5"},
+    {q:"What is the LCM of 4 and 6?", options:["12","24","8","18"], correct:"12"},
+    {q:"What is the HCF (GCD) of 18 and 24?", options:["6","9","3","12"], correct:"6"},
+    {q:"Convert 2 hours 30 minutes into minutes.", options:["150","120","140","160"], correct:"150"},
+    {q:"What is 8²?", options:["64","16","32","48"], correct:"64"},
+    {q:"A ladder truck can extend 30m. If it is at 60% extension, how many metres up is it?", options:["18m","20m","15m","12m"], correct:"18m"},
+    {q:"What is 1000 − 358?", options:["642","652","648","632"], correct:"642"},
+    {q:"Simplify 5/10.", options:["1/2","1/5","2/5","1/4"], correct:"1/2"},
+    {q:"If 5 hoses cost TT$250 in total, what is the cost of one hose?", options:["TT$50","TT$45","TT$55","TT$60"], correct:"TT$50"},
+    {q:"What is 9 + 9 ÷ 3?", options:["12","6","4","18"], correct:"12"},
+    {q:"Convert 3km into metres.", options:["3000m","300m","30000m","3m"], correct:"3000m"},
+    {q:"What is 12 × 12?", options:["144","124","132","156"], correct:"144"},
+    {q:"A fire station rotates shifts every 8 hours. How many shifts happen in 24 hours?", options:["3","2","4","6"], correct:"3"}
+  ],
+  english: [
+    {q:"Choose the correct spelling.", options:["Receive","Recieve","Receve","Receeve"], correct:"Receive"},
+    {q:"Choose the synonym of \"brave\".", options:["Courageous","Timid","Weak","Careless"], correct:"Courageous"},
+    {q:"Choose the antonym of \"extinguish\".", options:["Ignite","Douse","Smother","Quench"], correct:"Ignite"},
+    {q:"Choose the correct verb: \"Yesterday, the firefighters ___ to the scene.\"", options:["rushed","rush","rushing","rushes"], correct:"rushed"},
+    {q:"Identify the noun: \"The brave firefighter climbed the ladder.\"", options:["firefighter","climbed","brave","the"], correct:"firefighter"},
+    {q:"Choose the correct preposition: \"The cat is hiding ___ the table.\"", options:["under","in","on","at"], correct:"under"},
+    {q:"Which sentence is grammatically correct?", options:["He doesn't know.","He don't know.","He not know.","He doesn't knows."], correct:"He doesn't know."},
+    {q:"What is the plural of \"child\"?", options:["children","childs","childes","childrens"], correct:"children"},
+    {q:"Choose the correct word: \"___ going to the fire station.\"", options:["They're","Their","There","Theyre"], correct:"They're"},
+    {q:"Choose the synonym of \"quickly\".", options:["swiftly","slowly","calmly","lazily"], correct:"swiftly"},
+    {q:"Identify the verb: \"She wrote a report.\"", options:["wrote","she","a","report"], correct:"wrote"},
+    {q:"Choose the correct word: \"___ a hot day.\"", options:["It's","Its","Its'","Their"], correct:"It's"},
+    {q:"Choose the antonym of \"increase\".", options:["decrease","expand","grow","raise"], correct:"decrease"},
+    {q:"Choose the correct spelling.", options:["Definitely","Definately","Definitly","Definetly"], correct:"Definitely"},
+    {q:"What part of speech is \"quickly\" in: \"She ran quickly\"?", options:["adverb","adjective","noun","verb"], correct:"adverb"},
+    {q:"Choose the correct sentence.", options:["He and I went.","Me and him went.","Him and me went.","I and him went."], correct:"He and I went."},
+    {q:"Choose the synonym of \"enormous\".", options:["huge","tiny","average","slight"], correct:"huge"},
+    {q:"What is the correct plural of \"man\"?", options:["men","mans","men's","manes"], correct:"men"},
+    {q:"Choose the correct word: \"The team ___ working hard.\"", options:["is","are","be","were"], correct:"is"},
+    {q:"Identify the adjective: \"The tall building caught fire.\"", options:["tall","building","caught","fire"], correct:"tall"},
+    {q:"Choose the antonym of \"difficult\".", options:["easy","hard","complex","tough"], correct:"easy"},
+    {q:"Choose the correct spelling.", options:["Necessary","Neccessary","Neccesary","Necesary"], correct:"Necessary"},
+    {q:"Choose the correct word: \"Neither of them ___ ready.\"", options:["is","are","were","be"], correct:"is"},
+    {q:"Choose the synonym of \"assist\".", options:["help","hinder","ignore","delay"], correct:"help"},
+    {q:"Identify the subject: \"The dog barked loudly.\"", options:["dog","barked","loudly","the"], correct:"dog"},
+    {q:"What is the correct past tense of \"go\"?", options:["went","goed","gone","going"], correct:"went"},
+    {q:"Choose the correct spelling.", options:["Occasion","Occassion","Ocasion","Occasionn"], correct:"Occasion"},
+    {q:"What does the prefix \"re-\" mean, as in \"rebuild\"?", options:["again","before","not","under"], correct:"again"},
+    {q:"Choose the correct article: \"___ umbrella is red.\"", options:["An","A","The","No article needed"], correct:"An"},
+    {q:"Choose the synonym of \"begin\".", options:["commence","end","pause","stop"], correct:"commence"},
+    {q:"Choose the antonym of \"ancient\".", options:["modern","old","aged","historic"], correct:"modern"},
+    {q:"Choose the correct sentence.", options:["She doesn't like it.","She don't like it.","She not like it.","She doesn't likes it."], correct:"She doesn't like it."},
+    {q:"Identify the pronoun: \"She gave it to him.\"", options:["She","gave","to","him and it"], correct:"She"},
+    {q:"Choose the correct spelling.", options:["Embarrass","Embarass","Embaras","Embarras"], correct:"Embarrass"},
+    {q:"Choose the correct conjunction: \"I wanted to go, ___ it rained.\"", options:["but","and","or","so"], correct:"but"},
+    {q:"Choose the synonym of \"instantly\".", options:["immediately","slowly","eventually","rarely"], correct:"immediately"},
+    {q:"Choose the correct word: \"There ___ many people at the scene.\"", options:["were","was","is","be"], correct:"were"},
+    {q:"Identify the adverb: \"He ran quickly to safety.\"", options:["quickly","ran","safety","he"], correct:"quickly"},
+    {q:"Choose the antonym of \"brave\".", options:["cowardly","bold","fearless","daring"], correct:"cowardly"},
+    {q:"Choose the correct spelling.", options:["Accommodate","Acommodate","Accomodate","Acomodate"], correct:"Accommodate"}
+  ],
+  gk: [
+    {q:"What is the capital of Trinidad and Tobago?", options:["Port of Spain","San Fernando","Scarborough","Chaguanas"], correct:"Port of Spain"},
+    {q:"In what year did Trinidad and Tobago gain independence?", options:["1962","1976","1958","1970"], correct:"1962"},
+    {q:"What is the national instrument of Trinidad and Tobago?", options:["Steelpan","Guitar","Drum","Violin"], correct:"Steelpan"},
+    {q:"What is the currency of Trinidad and Tobago?", options:["TT Dollar","US Dollar","Euro","Pound"], correct:"TT Dollar"},
+    {q:"Who was Trinidad and Tobago's first Prime Minister?", options:["Eric Williams","A.N.R. Robinson","Patrick Manning","Basdeo Panday"], correct:"Eric Williams"},
+    {q:"What is Trinidad's national bird?", options:["Scarlet Ibis","Eagle","Parrot","Owl"], correct:"Scarlet Ibis"},
+    {q:"What festival is Trinidad and Tobago world-famous for?", options:["Carnival","Oktoberfest","Diwali","Thanksgiving"], correct:"Carnival"},
+    {q:"Which ocean lies to the east of Trinidad and Tobago?", options:["Atlantic Ocean","Pacific Ocean","Indian Ocean","Arctic Ocean"], correct:"Atlantic Ocean"},
+    {q:"What is the capital of Tobago?", options:["Scarborough","Plymouth","Roxborough","Charlotteville"], correct:"Scarborough"},
+    {q:"Trinidad and Tobago is part of which region?", options:["The Caribbean","Europe","Asia","Africa"], correct:"The Caribbean"},
+    {q:"What is the capital of France?", options:["Paris","London","Rome","Berlin"], correct:"Paris"},
+    {q:"How many continents are there?", options:["7","5","6","8"], correct:"7"},
+    {q:"What is the largest planet in our solar system?", options:["Jupiter","Saturn","Earth","Mars"], correct:"Jupiter"},
+    {q:"What gas do humans need to breathe to survive?", options:["Oxygen","Carbon Dioxide","Nitrogen","Hydrogen"], correct:"Oxygen"},
+    {q:"What is the chemical symbol for water?", options:["H2O","CO2","O2","NaCl"], correct:"H2O"},
+    {q:"Which organ pumps blood through the body?", options:["Heart","Lungs","Liver","Kidney"], correct:"Heart"},
+    {q:"What is the capital of the United States?", options:["Washington D.C.","New York","Los Angeles","Chicago"], correct:"Washington D.C."},
+    {q:"How many days are in a leap year?", options:["366","365","364","367"], correct:"366"},
+    {q:"What is the freezing point of water in Celsius?", options:["0°C","100°C","32°C","−10°C"], correct:"0°C"},
+    {q:"Which planet is known as the Red Planet?", options:["Mars","Venus","Jupiter","Mercury"], correct:"Mars"},
+    {q:"What is the tallest mountain in the world?", options:["Mount Everest","K2","Kilimanjaro","Denali"], correct:"Mount Everest"},
+    {q:"What is the smallest prime number?", options:["2","1","3","0"], correct:"2"},
+    {q:"Which gas do plants absorb from the air for photosynthesis?", options:["Carbon Dioxide","Oxygen","Nitrogen","Hydrogen"], correct:"Carbon Dioxide"},
+    {q:"What is the largest ocean on Earth?", options:["Pacific Ocean","Atlantic Ocean","Indian Ocean","Arctic Ocean"], correct:"Pacific Ocean"},
+    {q:"Who developed the theory of relativity?", options:["Albert Einstein","Isaac Newton","Galileo Galilei","Charles Darwin"], correct:"Albert Einstein"},
+    {q:"What is the boiling point of water at sea level, in Celsius?", options:["100°C","90°C","120°C","80°C"], correct:"100°C"},
+    {q:"What is the main language spoken in Trinidad and Tobago?", options:["English","French","Spanish","Portuguese"], correct:"English"},
+    {q:"Which sea lies to the west of Trinidad?", options:["Caribbean Sea","Red Sea","Black Sea","Mediterranean Sea"], correct:"Caribbean Sea"},
+    {q:"What is the national flower of Trinidad and Tobago?", options:["Chaconia","Rose","Hibiscus","Orchid"], correct:"Chaconia"},
+    {q:"What does \"CPR\" stand for?", options:["Cardiopulmonary Resuscitation","Cardiac Pulse Rate","Cardio Physical Recovery","Critical Patient Response"], correct:"Cardiopulmonary Resuscitation"},
+    {q:"Which of these is a greenhouse gas?", options:["Carbon Dioxide","Oxygen","Nitrogen","Helium"], correct:"Carbon Dioxide"},
+    {q:"What is the hardest naturally occurring substance on Earth?", options:["Diamond","Gold","Iron","Quartz"], correct:"Diamond"},
+    {q:"Which organ filters waste from the blood?", options:["Kidney","Heart","Lungs","Stomach"], correct:"Kidney"},
+    {q:"What does \"www\" stand for?", options:["World Wide Web","World Wide Wire","Wide World Web","World Wireless Web"], correct:"World Wide Web"},
+    {q:"How many bones are in the adult human body?", options:["206","201","210","198"], correct:"206"},
+    {q:"What is the largest country in the world by area?", options:["Russia","Canada","China","USA"], correct:"Russia"},
+    {q:"Which class of fire extinguisher is designed for flammable liquids?", options:["Class B","Class A","Class C","Class D"], correct:"Class B"},
+    {q:"What color results from mixing red and yellow?", options:["Orange","Purple","Green","Brown"], correct:"Orange"},
+    {q:"What is the main purpose of a smoke detector?", options:["To detect smoke and alert occupants","To extinguish fires","To purify the air","To cool a room"], correct:"To detect smoke and alert occupants"},
+    {q:"What do we call the study of weather?", options:["Meteorology","Geology","Biology","Astronomy"], correct:"Meteorology"}
+  ]
+};
+
+const CATEGORY_META = {
+  math: {name:"Math", icon:"➗"},
+  english: {name:"English", icon:"📖"},
+  gk: {name:"General Knowledge", icon:"🌍"}
+};
+
+/* ---------- Persistent high scores ---------- */
+const STORAGE_KEY = "fse_highscores_v1";
+function loadScores(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {math:0, english:0, gk:0};
+    return JSON.parse(raw);
+  }catch(e){
+    return {math:0, english:0, gk:0};
+  }
+}
+function saveScores(scores){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(scores)); }catch(e){}
+}
+let highScores = loadScores();
+
+/* ---------- App state ---------- */
+let state = {
+  category: null,
+  questions: [],   // shuffled copy for this attempt, options shuffled too
+  answers: [],     // selected option text per question, or null
+  current: 0
+};
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function buildQuiz(category){
+  const bank = QUESTION_BANKS[category];
+  const shuffledQs = shuffle(bank).map(item=>({
+    q:item.q,
+    correct:item.correct,
+    options:shuffle(item.options)
+  }));
+  state.category = category;
+  state.questions = shuffledQs;
+  state.answers = new Array(shuffledQs.length).fill(null);
+  state.current = 0;
+}
+
+/* ---------- Screen switching ---------- */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+/* ---------- Home rendering ---------- */
+function overallHighScore(){
+  const vals = Object.values(highScores);
+  return vals.length ? Math.max(...vals) : 0;
+}
+
+function renderHome(){
+  document.getElementById("home-highscore").textContent = overallHighScore() + "%";
+  const list = document.getElementById("cat-list");
+  list.innerHTML = "";
+  Object.keys(CATEGORY_META).forEach(key=>{
+    const meta = CATEGORY_META[key];
+    const best = highScores[key] || 0;
+    const div = document.createElement("div");
+    div.className = "cat-card";
+    div.innerHTML = `
+      <div class="cat-icon">${meta.icon}</div>
+      <div class="cat-info">
+        <div class="name">${meta.name}</div>
+        <div class="meta">${QUESTION_BANKS[key].length} questions · multiple choice</div>
+        <div class="cat-best">${best > 0 ? "Best score: " + best + "%" : "Not attempted yet"}</div>
+      </div>
+      <div class="chevron">›</div>
+    `;
+    div.addEventListener("click", ()=>{
+      buildQuiz(key);
+      showScreen("screen-quiz");
+      renderQuestion();
+    });
+    list.appendChild(div);
+  });
+}
+
+/* ---------- Quiz rendering ---------- */
+function renderQuestion(){
+  const total = state.questions.length;
+  const i = state.current;
+  const item = state.questions[i];
+
+  document.getElementById("quiz-cat-label").textContent = CATEGORY_META[state.category].name;
+  document.getElementById("progress-fill").style.width = (((i+1)/total)*100) + "%";
+  document.getElementById("progress-text").textContent = `Question ${i+1} of ${total}`;
+  document.getElementById("q-number").textContent = `QUESTION ${i+1}`;
+  document.getElementById("q-text").textContent = item.q;
+
+  const container = document.getElementById("options-container");
+  container.innerHTML = "";
+  const letters = ["A","B","C","D"];
+  item.options.forEach((opt, idx)=>{
+    const btn = document.createElement("button");
+    btn.className = "option-btn" + (state.answers[i] === opt ? " selected" : "");
+    btn.innerHTML = `<span class="letter">${letters[idx]}</span><span>${opt}</span>`;
+    btn.addEventListener("click", ()=>{
+      state.answers[i] = opt;
+      renderQuestion();
+    });
+    container.appendChild(btn);
+  });
+
+  document.getElementById("prev-btn").disabled = (i === 0);
+  const skipBtn = document.getElementById("skip-btn");
+  skipBtn.textContent = (i === total-1) ? "Review all →" : "Skip →";
+}
+
+document.getElementById("prev-btn").addEventListener("click", ()=>{
+  if(state.current > 0){ state.current--; renderQuestion(); }
+});
+document.getElementById("skip-btn").addEventListener("click", ()=>{
+  if(state.current < state.questions.length - 1){
+    state.current++;
+    renderQuestion();
+  } else {
+    renderReview();
+    showScreen("screen-review");
+  }
+});
+document.getElementById("review-link-btn").addEventListener("click", ()=>{
+  renderReview();
+  showScreen("screen-review");
+});
+document.getElementById("quiz-home-btn").addEventListener("click", ()=>{
+  renderHome();
+  showScreen("screen-home");
+});
+document.getElementById("review-back-btn").addEventListener("click", ()=>{
+  showScreen("screen-quiz");
+  renderQuestion();
+});
+
+/* ---------- Review grid ---------- */
+function renderReview(){
+  const total = state.questions.length;
+  const answeredCount = state.answers.filter(a=>a!==null).length;
+  document.getElementById("review-summary").textContent =
+    `${answeredCount} of ${total} answered · tap any number to jump to that question`;
+
+  const grid = document.getElementById("review-grid");
+  grid.innerHTML = "";
+  for(let i=0;i<total;i++){
+    const cell = document.createElement("div");
+    cell.className = "review-cell" + (state.answers[i]!==null ? " answered" : "") + (i===state.current ? " current" : "");
+    cell.textContent = i+1;
+    cell.addEventListener("click", ()=>{
+      state.current = i;
+      showScreen("screen-quiz");
+      renderQuestion();
+    });
+    grid.appendChild(cell);
+  }
+}
+
+document.getElementById("submit-btn").addEventListener("click", ()=>{
+  gradeAndShowResults();
+});
+
+/* ---------- Grading & results ---------- */
+function gradeAndShowResults(){
+  const total = state.questions.length;
+  let correctCount = 0;
+  state.questions.forEach((item,i)=>{
+    if(state.answers[i] === item.correct) correctCount++;
+  });
+  const pct = Math.round((correctCount/total)*100);
+
+  const prevBest = highScores[state.category] || 0;
+  const isNewBest = pct > prevBest;
+  if(isNewBest){
+    highScores[state.category] = pct;
+    saveScores(highScores);
+  }
+
+  document.getElementById("new-best-container").innerHTML = isNewBest
+    ? `<div class="new-best-badge">🔥 New personal best!</div>` : "";
+
+  document.getElementById("score-pct").textContent = pct + "%";
+  document.getElementById("score-fraction").textContent = `${correctCount} / ${total} correct`;
+
+  const ring = document.getElementById("score-ring");
+  const ringColor = pct >= 70 ? "#3ecf8e" : pct >= 50 ? "#ffbf3d" : "#ff5d5d";
+  ring.style.background = `conic-gradient(${ringColor} ${pct*3.6}deg, #2a2732 0deg)`;
+  ring.style.boxShadow = `0 0 0 8px ${ringColor}22`;
+  const inner = document.createElement("div");
+
+  let msg, detail;
+  if(pct >= 85){ msg = "Outstanding work!"; }
+  else if(pct >= 70){ msg = "Great job — solid pass!"; }
+  else if(pct >= 50){ msg = "Good effort — keep practicing."; }
+  else { msg = "Keep studying — you'll get there."; }
+  detail = `${CATEGORY_META[state.category].name} · ${total - correctCount} question${(total-correctCount)===1?"":"s"} to review below`;
+
+  document.getElementById("score-msg").textContent = msg;
+  document.getElementById("score-detail").textContent = detail;
+
+  const listEl = document.getElementById("answer-review-list");
+  listEl.innerHTML = "";
+  state.questions.forEach((item,i)=>{
+    const given = state.answers[i];
+    const wasCorrect = given === item.correct;
+    const div = document.createElement("div");
+    div.className = "answer-review-item";
+    div.innerHTML = `
+      <div class="qi-num">QUESTION ${i+1} ${wasCorrect ? "✅" : "❌"}</div>
+      <div class="qi-q">${item.q}</div>
+      <div class="qi-row ${wasCorrect ? 'correct' : 'wrong'}">
+        <span class="tag">Your answer:</span><span class="val">${given !== null ? given : "Skipped / no answer"}</span>
+      </div>
+      ${wasCorrect ? "" : `<div class="qi-row correct"><span class="tag">Correct answer:</span><span class="val">${item.correct}</span></div>`}
+    `;
+    listEl.appendChild(div);
+  });
+
+  showScreen("screen-results");
+}
+
+document.getElementById("try-again-btn").addEventListener("click", ()=>{
+  buildQuiz(state.category);
+  showScreen("screen-quiz");
+  renderQuestion();
+});
+document.getElementById("results-home-btn").addEventListener("click", ()=>{
+  renderHome();
+  showScreen("screen-home");
+});
+
+/* ---------- Init ---------- */
+renderHome();
+</script>
+</body>
+</html>
