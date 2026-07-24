@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>FireServicesExam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0f0e12;
+    --bg-1:#17151b;
+    --bg-2:#201d25;
+    --card:#221f27;
+    --line:#33303a;
+    --text:#f3ede4;
+    --text-dim:#a7a1ad;
+    --ember-1:#ff5a1f;
+    --ember-2:#ff8c1a;
+    --ember-3:#ffbf3d;
+    --deep-red:#b3231c;
+    --good:#3ecf8e;
+    --bad:#ff5d5d;
+    --radius:18px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #2c1810 0%, transparent 60%),
+      var(--bg-0);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding:20px 18px 30px;
+    position:relative;
+  }
+  h1,h2,h3{font-family:'Poppins',sans-serif; margin:0;}
+  .screen{display:none; flex-direction:column; flex:1; animation:fadeIn .35s ease;}
+  .screen.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ---------- Logo ---------- */
+  .logo-wrap{display:flex; flex-direction:column; align-items:center; margin-top:8px; margin-bottom:6px;}
+  .flame{width:78px; height:92px; position:relative;}
+  .flame svg{width:100%; height:100%; display:block; filter:drop-shadow(0 6px 18px rgba(255,90,31,.45));}
+  .flame .core{animation:flicker 2.6s ease-in-out infinite;}
+  .flame .inner{animation:flicker 2.2s ease-in-out infinite reverse;}
+  @keyframes flicker{
+    0%,100%{transform:scale(1) translateY(0);}
+    30%{transform:scale(1.03,0.97) translateY(-1px);}
+    55%{transform:scale(0.97,1.04) translateY(1px);}
+    80%{transform:scale(1.02,0.98) translateY(-0.5px);}
+  }
+  .brand-title{
+    font-weight:900; font-size:1.65rem; letter-spacing:.5px; text-align:center;
+    background:linear-gradient(90deg,var(--ember-3),var(--ember-1) 60%,var(--deep-red));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin-top:6px;
+  }
+  .brand-sub{
+    text-align:center; font-size:.72rem; color:var(--text-dim); letter-spacing:2.5px;
+    text-transform:uppercase; margin-top:2px; font-weight:600;
+  }
+
+  /* ---------- Highscore banner ---------- */
+  .highscore-bar{
+    margin-top:18px;
+    background:linear-gradient(135deg, rgba(255,90,31,.15), rgba(255,191,61,.08));
+    border:1px solid rgba(255,140,26,.35);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .highscore-bar .label{font-size:.68rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--text-dim); font-weight:700;}
+  .highscore-bar .value{font-family:'Poppins',sans-serif; font-weight:800; font-size:1.6rem; color:var(--ember-3);}
+  .highscore-bar .trophy{font-size:1.5rem;}
+
+  /* ---------- Category cards ---------- */
+  .cat-list{margin-top:20px; display:flex; flex-direction:column; gap:12px;}
+  .cat-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 16px;
+    display:flex; align-items:center; gap:14px;
+    cursor:pointer;
+    transition:transform .15s ease, border-color .15s ease, background .15s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .cat-card:active{transform:scale(0.98);}
+  .cat-card:hover{border-color:var(--ember-2);}
+  .cat-card::after{
+    content:''; position:absolute; right:-30px; top:-30px; width:90px; height:90px;
+    background:radial-gradient(circle, rgba(255,140,26,.18), transparent 70%);
+  }
+  .cat-icon{
+    width:46px; height:46px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+    background:linear-gradient(135deg,var(--ember-1),var(--deep-red));
+  }
+  .cat-info{flex:1;}
+  .cat-info .name{font-family:'Poppins',sans-serif; font-weight:700; font-size:1.02rem;}
+  .cat-info .meta{font-size:.76rem; color:var(--text-dim); margin-top:2px;}
+  .cat-best{font-size:.72rem; color:var(--ember-3); font-weight:700; margin-top:4px;}
+  .chevron{color:var(--text-dim); font-size:1.3rem;}
+
+  .disclaimer{
+    margin-top:22px; font-size:.68rem; line-height:1.5; color:var(--text-dim);
+    text-align:center; padding:0 6px;
+  }
+
+  .footer-credit{
+    margin-top:auto; padding-top:22px; text-align:center;
+    font-size:.68rem; color:#6b6672; letter-spacing:.5px;
+  }
+  .footer-credit b{color:var(--ember-2);}
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .back-btn{
+    background:none; border:none; color:var(--text-dim); font-size:1.4rem; cursor:pointer; padding:4px 8px;
+  }
+  .quiz-cat-label{font-family:'Poppins',sans-serif; font-weight:700; font-size:.95rem;}
+  .progress-track{
+    width:100%; height:7px; background:var(--bg-2); border-radius:10px; overflow:hidden; margin:10px 0 6px;
+  }
+  .progress-fill{
+    height:100%; border-radius:10px;
+    background:linear-gradient(90deg,var(--ember-1),var(--ember-3));
+    transition:width .3s ease;
+  }
+  .progress-text{font-size:.72rem; color:var(--text-dim); text-align:right; margin-bottom:14px;}
+
+  .question-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 18px; flex:1; display:flex; flex-direction:column;
+  }
+  .q-number{
+    font-size:.7rem; color:var(--ember-3); font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px;
+  }
+  .q-text{font-family:'Poppins',sans-serif; font-weight:600; font-size:1.08rem; line-height:1.45; margin-bottom:18px;}
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .option-btn{
+    text-align:left; background:var(--bg-2); border:1.5px solid var(--line); color:var(--text);
+    padding:13px 14px; border-radius:13px; font-size:.92rem; font-family:'Inter',sans-serif; font-weight:500;
+    cursor:pointer; display:flex; align-items:center; gap:10px; transition:all .15s ease;
+  }
+  .option-btn .letter{
+    width:24px; height:24px; border-radius:7px; background:var(--bg-1); display:flex; align-items:center;
+    justify-content:center; font-size:.72rem; font-weight:700; color:var(--text-dim); flex-shrink:0;
+  }
+  .option-btn:active{transform:scale(0.98);}
+  .option-btn.selected{
+    border-color:var(--ember-2); background:rgba(255,140,26,.14);
+  }
+  .option-btn.selected .letter{background:var(--ember-1); color:#1a1006;}
+
+  .nav-row{display:flex; gap:10px; margin-top:16px;}
+  .nav-btn{
+    flex:1; padding:13px 0; border-radius:13px; border:none; font-family:'Poppins',sans-serif;
+    font-weight:700; font-size:.85rem; cursor:pointer; transition:opacity .15s ease, transform .1s ease;
+  }
+  .nav-btn:active{transform:scale(0.97);}
+  .nav-btn.ghost{background:var(--bg-2); color:var(--text); border:1px solid var(--line);}
+  .nav-btn.primary{background:linear-gradient(90deg,var(--ember-1),var(--ember-2)); color:#1a1006;}
+  .nav-btn:disabled{opacity:.35; cursor:default;}
+  .review-link{
+    text-align:center; margin-top:12px; font-size:.78rem; color:var(--ember-3); font-weight:700;
+    cursor:pointer; text-decoration:underline; text-underline-offset:3px;
+  }
+
+  /* ---------- Review grid ---------- */
+  .review-grid{
+    display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin:14px 0 18px;
+  }
+  .review-cell{
+    aspect-ratio:1; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    font-size:.75rem; font-weight:700; cursor:pointer; border:1.5px solid var(--line); background:var(--bg-2); color:var(--text-dim);
+  }
+  .review-cell.answered{background:rgba(62,207,142,.14); border-color:var(--good); color:var(--good);}
+  .review-cell.current{outline:2px solid var(--ember-2); outline-offset:1px;}
+  .review-summary{font-size:.82rem; color:var(--text-dim); text-align:center; margin-bottom:6px;}
+
+  /* ---------- Results ---------- */
+  .score-ring-wrap{display:flex; justify-content:center; margin:18px 0 8px;}
+  .score-ring{
+    width:170px; height:170px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .score-ring .pct{font-family:'Poppins',sans-serif; font-weight:900; font-size:2.1rem;}
+  .score-ring .pct-sub{font-size:.7rem; color:var(--text-dim); font-weight:600; letter-spacing:1px;}
+  .score-msg{text-align:center; font-family:'Poppins',sans-serif; font-weight:700; margin:8px 0 4px; font-size:1.05rem;}
+  .score-detail{text-align:center; font-size:.8rem; color:var(--text-dim); margin-bottom:16px;}
+  .new-best-badge{
+    display:block; text-align:center; margin:0 auto 14px; padding:6px 14px; border-radius:20px;
+    background:linear-gradient(90deg,var(--ember-1),var(--ember-3)); color:#1a1006; font-weight:800;
+    font-size:.75rem; width:fit-content;
+  }
+  .answer-review-item{
+    background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px 14px; margin-bottom:10px;
+  }
+  .answer-review-item .qi-num{font-size:.68rem; color:var(--text-dim); font-weight:700; letter-spacing:1px; margin-bottom:4px;}
+  .answer-review-item .qi-q{font-weight:600; font-size:.92rem; margin-bottom:8px; line-height:1.4;}
+  .qi-row{font-size:.82rem; margin-bottom:3px; display:flex; gap:6px;}
+  .qi-row .tag{font-weight:700; flex-shrink:0;}
+  .qi-row.correct .tag, .qi-row.correct .val{color:var(--good);}
+  .qi-row.wrong .tag, .qi-row.wrong .val{color:var(--bad);}
+  .qi-row.given.correct-answer .val{color:var(--good);}
+
+  .result-actions{display:flex; flex-direction:column; gap:10px; margin-top:16px; margin-bottom:8px;}
+  .big-btn{
+    padding:15px 0; border-radius:14px; border:none; font-family:'Poppins',sans-serif; font-weight:700;
+    font-size:.95rem; cursor:pointer;
+  }
+  .big-btn.primary{background:linear-gradient(90deg,var(--ember-1),var(--ember-2)); color:#1a1006;}
+  .big-btn.ghost{background:var(--bg-2); border:1px solid var(--line); color:var(--text);}
+
+  ::-webkit-scrollbar{width:0px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME SCREEN -->
+  <section id="screen-home" class="screen active">
+    <div class="logo-wrap">
+      <div class="flame">
+        <svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="core" d="M50 6C40 26 20 34 20 60C20 84 34 100 50 100C66 100 80 84 80 60C80 44 70 38 66 26C64 34 58 40 52 40C44 40 42 30 46 18C44 20 38 24 34 32C36 20 44 10 50 6Z" fill="url(#g1)"/>
+          <path class="inner" d="M50 44C45 54 38 58 38 70C38 82 43 90 50 90C57 90 62 82 62 70C62 62 57 58 55 52C54 57 51 60 48 60C44 60 43 54 46 47C45 48 42 50 40 54C41 48 45 47 50 44Z" fill="url(#g2)"/>
+          <defs>
+            <linearGradient id="g1" x1="20" y1="6" x2="80" y2="100" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#ffbf3d"/><stop offset="0.45" stop-color="#ff8c1a"/><stop offset="1" stop-color="#b3231c"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="38" y1="44" x2="62" y2="90" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#fff3c4"/><stop offset="1" stop-color="#ff8c1a"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="brand-title">FireServicesExam</div>
+      <div class="brand-sub">T&amp;T Fire Service Entrance Prep</div>
+    </div>
+
+    <div class="highscore-bar">
+      <div>
+        <div class="label">Highest score overall</div>
+        <div class="value" id="home-highscore">—</div>
+      </div>
+      <div class="trophy">🏆</div>
+    </div>
+
+    <div class="cat-list" id="cat-list"></div>
+
+    <p class="disclaimer">Questions are original practice material written to reflect the Math, English &amp; General Knowledge topics covered in the T&amp;T Fire Service entrance exam (General Knowledge is entirely Trinidad &amp; Tobago-focused). Each test randomly draws 40 questions from a much larger pool, so retakes stay fresh. Not official leaked or copyrighted past-paper questions.</p>
+
+    <div class="footer-credit">BuiltbyPawi</div>
+  </section>
+
+  <!-- QUIZ SCREEN -->
+  <section id="screen-quiz" class="screen">
+    <div class="quiz-top">
+      <button class="back-btn" id="quiz-home-btn">←</button>
+      <div class="quiz-cat-label" id="quiz-cat-label">Math</div>
+      <div style="width:28px;"></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-text" id="progress-text">Question 1 of 40</div>
+
+    <div class="question-card">
+      <div class="q-number" id="q-number">QUESTION 1</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options-container"></div>
+      <div style="flex:1;"></div>
+      <div class="nav-row">
+        <button class="nav-btn ghost" id="prev-btn">← Previous</button>
+        <button class="nav-btn ghost" id="skip-btn">Skip →</button>
+      </div>
+      <div class="review-link" id="review-link-btn">Review all answers</div>
+    </div>
+  </section>
+
+  <!-- REVIEW SCREEN -->
+  <section id="screen-review" class="screen">
+    <div class="quiz-top">
+      <button class="back-btn" id="review-back-btn">←</button>
+      <div class="quiz-cat-label">Review</div>
+      <div style="width:28px;"></div>
+    </div>
+    <div class="review-summary" id="review-summary"></div>
+    <div class="review-grid" id="review-grid"></div>
+    <div style="flex:1;"></div>
+    <button class="big-btn primary" id="submit-btn">Submit &amp; Get Graded</button>
+  </section>
+
+  <!-- RESULTS SCREEN -->
+  <section id="screen-results" class="screen">
+    <h2 style="text-align:center; margin-top:6px; margin-bottom:2px; font-size:1.2rem;">Results</h2>
+    <div id="new-best-container"></div>
+    <div class="score-ring-wrap">
+      <div class="score-ring" id="score-ring">
+        <div style="text-align:center;">
+          <div class="pct" id="score-pct">0%</div>
+          <div class="pct-sub" id="score-fraction">0 / 0</div>
+        </div>
+      </div>
+    </div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="score-detail" id="score-detail"></div>
+    <div id="answer-review-list"></div>
+    <div class="result-actions">
+      <button class="big-btn primary" id="try-again-btn">🔥 Try Again — New Test</button>
+      <button class="big-btn ghost" id="results-home-btn">Back to Home</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* =====================================================
+   FireServicesExam — data + logic
+   ===================================================== */
+
+const QUESTION_BANKS = {
+  math: [{"q": "7 + 8 × 2 = ?", "options": ["58", "30", "17", "23"], "correct": "23"}, {"q": "5 + 6 × 3 = ?", "options": ["24", "14", "23", "33"], "correct": "23"}, {"q": "9 + 4 × 5 = ?", "options": ["65", "18", "41", "29"], "correct": "29"}, {"q": "3 + 7 × 6 = ?", "options": ["60", "27", "45", "16"], "correct": "45"}, {"q": "8 + 3 × 9 = ?", "options": ["99", "33", "20", "35"], "correct": "35"}, {"q": "2 + 9 × 4 = ?", "options": ["44", "15", "22", "38"], "correct": "38"}, {"q": "6 + 5 × 7 = ?", "options": ["37", "77", "41", "18"], "correct": "41"}, {"q": "4 + 8 × 3 = ?", "options": ["36", "15", "28", "35"], "correct": "28"}, {"q": "10 + 2 × 6 = ?", "options": ["22", "26", "72", "18"], "correct": "22"}, {"q": "1 + 9 × 8 = ?", "options": ["17", "18", "73", "80"], "correct": "73"}, {"q": "12 + 3 × 5 = ?", "options": ["41", "75", "20", "27"], "correct": "27"}, {"q": "6 + 7 × 2 = ?", "options": ["15", "44", "26", "20"], "correct": "20"}, {"q": "11 + 4 × 6 = ?", "options": ["21", "90", "35", "50"], "correct": "35"}, {"q": "9 + 9 × 2 = ?", "options": ["83", "20", "36", "27"], "correct": "27"}, {"q": "13 + 2 × 7 = ?", "options": ["27", "105", "22", "33"], "correct": "27"}, {"q": "5 + 5 × 5 = ?", "options": ["31", "30", "15", "50"], "correct": "30"}, {"q": "8 + 6 × 4 = ?", "options": ["56", "18", "52", "32"], "correct": "32"}, {"q": "7 + 3 × 8 = ?", "options": ["80", "18", "31", "29"], "correct": "31"}, {"q": "14 + 2 × 3 = ?", "options": ["19", "31", "48", "20"], "correct": "20"}, {"q": "6 + 9 × 3 = ?", "options": ["33", "45", "57", "18"], "correct": "33"}, {"q": "20 − 12 ÷ 4 = ?", "options": ["17", "12", "-28", "2"], "correct": "17"}, {"q": "30 − 15 ÷ 3 = ?", "options": ["25", "-15", "18", "5"], "correct": "25"}, {"q": "25 − 10 ÷ 5 = ?", "options": ["3", "-25", "20", "23"], "correct": "23"}, {"q": "40 − 24 ÷ 6 = ?", "options": ["22", "-104", "36", "2"], "correct": "36"}, {"q": "18 − 8 ÷ 2 = ?", "options": ["12", "14", "5", "2"], "correct": "14"}, {"q": "50 − 20 ÷ 4 = ?", "options": ["7", "-30", "45", "34"], "correct": "45"}, {"q": "60 − 18 ÷ 3 = ?", "options": ["6", "45", "14", "54"], "correct": "54"}, {"q": "15 − 9 ÷ 3 = ?", "options": ["2", "-12", "12", "9"], "correct": "12"}, {"q": "35 − 16 ÷ 4 = ?", "options": ["-29", "4", "31", "23"], "correct": "31"}, {"q": "45 − 25 ÷ 5 = ?", "options": ["40", "4", "25", "-80"], "correct": "40"}, {"q": "22 − 16 ÷ 4 = ?", "options": ["10", "18", "-42", "1"], "correct": "18"}, {"q": "48 − 30 ÷ 6 = ?", "options": ["43", "-132", "24", "3"], "correct": "43"}, {"q": "36 − 12 ÷ 3 = ?", "options": ["32", "8", "27", "0"], "correct": "32"}, {"q": "28 − 20 ÷ 5 = ?", "options": ["1", "-72", "24", "13"], "correct": "24"}, {"q": "44 − 18 ÷ 2 = ?", "options": ["13", "28", "35", "8"], "correct": "35"}, {"q": "Simplify: 1/2 + 1/4", "options": ["1/2", "1/3", "2/5", "3/4"], "correct": "3/4"}, {"q": "Simplify: 1/3 + 1/6", "options": ["5/8", "1/2", "1/3", "2/5"], "correct": "1/2"}, {"q": "Simplify: 2/5 + 1/5", "options": ["1/3", "1/4", "3/5", "3/8"], "correct": "3/5"}, {"q": "Simplify: 3/8 + 1/8", "options": ["1/2", "5/8", "7/10", "2/5"], "correct": "1/2"}, {"q": "Simplify: 1/4 + 1/8", "options": ["3/8", "1/2", "2/5", "5/9"], "correct": "3/8"}, {"q": "Simplify: 2/3 + 1/6", "options": ["2/3", "2/5", "5/6", "1/3"], "correct": "5/6"}, {"q": "Simplify: 1/2 + 1/8", "options": ["2/3", "1/6", "5/8", "1/2"], "correct": "5/8"}, {"q": "Simplify: 3/4 + 1/8", "options": ["2/3", "5/8", "7/8", "2/9"], "correct": "7/8"}, {"q": "Simplify: 1/5 + 2/5", "options": ["7/10", "7/8", "1/4", "3/5"], "correct": "3/5"}, {"q": "Simplify: 2/7 + 3/7", "options": ["5/7", "7/8", "5/9", "1/4"], "correct": "5/7"}, {"q": "Simplify: 1/6 + 1/3", "options": ["3/8", "1/3", "1/6", "1/2"], "correct": "1/2"}, {"q": "Simplify: 3/10 + 1/10", "options": ["5/8", "2/5", "1/4", "5/6"], "correct": "2/5"}, {"q": "Simplify: 1/9 + 2/9", "options": ["1/3", "5/8", "7/8", "1/2"], "correct": "1/3"}, {"q": "Simplify: 3/5 + 1/10", "options": ["1/6", "5/8", "1/3", "7/10"], "correct": "7/10"}, {"q": "Simplify: 1/4 + 1/4", "options": ["5/6", "2/3", "7/8", "1/2"], "correct": "1/2"}, {"q": "Simplify: 2/9 + 1/9", "options": ["3/8", "7/10", "1/3", "3/4"], "correct": "1/3"}, {"q": "Simplify: 5/12 + 1/12", "options": ["5/6", "1/2", "3/5", "2/3"], "correct": "1/2"}, {"q": "Simplify: 1/3 + 1/3", "options": ["3/4", "2/3", "7/8", "1/4"], "correct": "2/3"}, {"q": "What is 25% of 200?", "options": ["50", "60", "150", "70"], "correct": "50"}, {"q": "What is 10% of 90?", "options": ["81", "18", "9", "13"], "correct": "9"}, {"q": "What is 50% of 84?", "options": ["50", "42", "43", "46"], "correct": "42"}, {"q": "What is 20% of 150?", "options": ["30", "120", "45", "37"], "correct": "30"}, {"q": "What is 75% of 40?", "options": ["32", "30", "34", "10"], "correct": "30"}, {"q": "What is 15% of 60?", "options": ["12", "51", "9", "15"], "correct": "9"}, {"q": "What is 30% of 90?", "options": ["36", "31", "27", "63"], "correct": "27"}, {"q": "What is 40% of 25?", "options": ["15", "11", "10", "12"], "correct": "10"}, {"q": "What is 60% of 50?", "options": ["20", "30", "32", "35"], "correct": "30"}, {"q": "What is 5% of 200?", "options": ["190", "30", "10", "20"], "correct": "10"}, {"q": "What is 90% of 20?", "options": ["18", "2", "20", "19"], "correct": "18"}, {"q": "What is 12% of 50?", "options": ["44", "11", "8", "6"], "correct": "6"}, {"q": "What is 25% of 320?", "options": ["80", "96", "112", "240"], "correct": "80"}, {"q": "What is 10% of 250?", "options": ["50", "37", "225", "25"], "correct": "25"}, {"q": "What is 50% of 96?", "options": ["48", "49", "58", "52"], "correct": "48"}, {"q": "What is 20% of 45?", "options": ["14", "11", "36", "9"], "correct": "9"}, {"q": "What is 75% of 120?", "options": ["90", "96", "30", "102"], "correct": "90"}, {"q": "What is 30% of 70?", "options": ["24", "21", "28", "49"], "correct": "21"}, {"q": "What is 80% of 15?", "options": ["14", "12", "3", "13"], "correct": "12"}, {"q": "What is 45% of 40?", "options": ["19", "20", "18", "22"], "correct": "18"}, {"q": "Simplify the ratio 12:16", "options": ["4:4", "12:16", "4:3", "3:4"], "correct": "3:4"}, {"q": "Simplify the ratio 18:24", "options": ["18:24", "3:4", "4:4", "4:3"], "correct": "3:4"}, {"q": "Simplify the ratio 20:25", "options": ["4:5", "5:5", "20:25", "5:4"], "correct": "4:5"}, {"q": "Simplify the ratio 15:20", "options": ["15:20", "4:4", "4:3", "3:4"], "correct": "3:4"}, {"q": "Simplify the ratio 8:12", "options": ["2:3", "3:3", "8:12", "3:2"], "correct": "2:3"}, {"q": "Simplify the ratio 9:15", "options": ["3:5", "9:15", "4:5", "5:3"], "correct": "3:5"}, {"q": "Simplify the ratio 14:21", "options": ["3:2", "14:21", "2:3", "3:3"], "correct": "2:3"}, {"q": "Simplify the ratio 10:15", "options": ["3:3", "2:3", "3:2", "10:15"], "correct": "2:3"}, {"q": "Simplify the ratio 16:20", "options": ["16:20", "4:5", "5:5", "5:4"], "correct": "4:5"}, {"q": "Simplify the ratio 21:28", "options": ["21:28", "3:4", "4:4", "4:3"], "correct": "3:4"}, {"q": "Simplify the ratio 24:36", "options": ["2:3", "3:3", "3:2", "24:36"], "correct": "2:3"}, {"q": "Simplify the ratio 27:36", "options": ["3:4", "4:3", "4:4", "27:36"], "correct": "3:4"}, {"q": "Simplify the ratio 30:45", "options": ["2:3", "30:45", "3:2", "3:3"], "correct": "2:3"}, {"q": "Simplify the ratio 6:10", "options": ["6:10", "3:5", "5:3", "4:5"], "correct": "3:5"}, {"q": "Simplify the ratio 35:49", "options": ["5:7", "6:7", "35:49", "7:5"], "correct": "5:7"}, {"q": "A vehicle travels 60km in 1.5 hours. What is its average speed in km/h?", "options": ["50", "90", "30", "40"], "correct": "40"}, {"q": "A vehicle travels 90km in 3 hours. What is its average speed in km/h?", "options": ["20", "40", "30", "270"], "correct": "30"}, {"q": "A vehicle travels 120km in 2 hours. What is its average speed in km/h?", "options": ["240", "70", "50", "60"], "correct": "60"}, {"q": "A vehicle travels 45km in 1 hours. What is its average speed in km/h?", "options": ["55", "45", "35", "46"], "correct": "45"}, {"q": "A vehicle travels 200km in 4 hours. What is its average speed in km/h?", "options": ["60", "50", "800", "40"], "correct": "50"}, {"q": "A vehicle travels 150km in 2.5 hours. What is its average speed in km/h?", "options": ["60", "70", "375", "50"], "correct": "60"}, {"q": "A vehicle travels 80km in 2 hours. What is its average speed in km/h?", "options": ["30", "50", "40", "160"], "correct": "40"}, {"q": "A vehicle travels 300km in 5 hours. What is its average speed in km/h?", "options": ["70", "50", "1500", "60"], "correct": "60"}, {"q": "A vehicle travels 72km in 1.5 hours. What is its average speed in km/h?", "options": ["48", "38", "58", "108"], "correct": "48"}, {"q": "A vehicle travels 64km in 1.6 hours. What is its average speed in km/h?", "options": ["102", "30", "50", "40"], "correct": "40"}, {"q": "A vehicle travels 100km in 2 hours. What is its average speed in km/h?", "options": ["60", "40", "200", "50"], "correct": "50"}, {"q": "A vehicle travels 210km in 3 hours. What is its average speed in km/h?", "options": ["70", "630", "80", "60"], "correct": "70"}, {"q": "What is the area of a rectangle 8m long and 5m wide?", "options": ["40 sq m", "26 sq m", "45 sq m", "25 sq m"], "correct": "40 sq m"}, {"q": "What is the area of a rectangle 6m long and 4m wide?", "options": ["28 sq m", "20 sq m", "24 sq m", "19 sq m"], "correct": "24 sq m"}, {"q": "What is the area of a rectangle 9m long and 7m wide?", "options": ["70 sq m", "63 sq m", "32 sq m", "31 sq m"], "correct": "63 sq m"}, {"q": "What is the area of a rectangle 12m long and 3m wide?", "options": ["36 sq m", "30 sq m", "29 sq m", "39 sq m"], "correct": "36 sq m"}, {"q": "What is the area of a rectangle 10m long and 6m wide?", "options": ["60 sq m", "66 sq m", "31 sq m", "32 sq m"], "correct": "60 sq m"}, {"q": "What is the area of a rectangle 7m long and 7m wide?", "options": ["27 sq m", "28 sq m", "56 sq m", "49 sq m"], "correct": "49 sq m"}, {"q": "What is the area of a rectangle 11m long and 4m wide?", "options": ["44 sq m", "48 sq m", "29 sq m", "30 sq m"], "correct": "44 sq m"}, {"q": "What is the area of a rectangle 15m long and 2m wide?", "options": ["34 sq m", "30 sq m", "33 sq m", "32 sq m"], "correct": "30 sq m"}, {"q": "What is the area of a rectangle 13m long and 5m wide?", "options": ["35 sq m", "70 sq m", "65 sq m", "36 sq m"], "correct": "65 sq m"}, {"q": "What is the area of a rectangle 9m long and 9m wide?", "options": ["36 sq m", "81 sq m", "90 sq m", "35 sq m"], "correct": "81 sq m"}, {"q": "What is the area of a rectangle 14m long and 6m wide?", "options": ["90 sq m", "39 sq m", "84 sq m", "40 sq m"], "correct": "84 sq m"}, {"q": "What is the area of a rectangle 20m long and 3m wide?", "options": ["60 sq m", "63 sq m", "46 sq m", "45 sq m"], "correct": "60 sq m"}, {"q": "What is the perimeter of a rectangle 8m by 5m?", "options": ["40m", "28m", "26m", "22m"], "correct": "26m"}, {"q": "What is the perimeter of a rectangle 6m by 4m?", "options": ["22m", "20m", "24m", "16m"], "correct": "20m"}, {"q": "What is the perimeter of a rectangle 9m by 7m?", "options": ["34m", "32m", "63m", "28m"], "correct": "32m"}, {"q": "What is the perimeter of a rectangle 12m by 3m?", "options": ["30m", "26m", "36m", "32m"], "correct": "30m"}, {"q": "What is the perimeter of a rectangle 10m by 6m?", "options": ["60m", "32m", "34m", "28m"], "correct": "32m"}, {"q": "What is the perimeter of a rectangle 7m by 7m?", "options": ["30m", "49m", "28m", "24m"], "correct": "28m"}, {"q": "What is the perimeter of a rectangle 11m by 4m?", "options": ["32m", "30m", "44m", "26m"], "correct": "30m"}, {"q": "What is the perimeter of a rectangle 15m by 2m?", "options": ["34m", "36m", "30m", "35m"], "correct": "34m"}, {"q": "What is the perimeter of a rectangle 13m by 5m?", "options": ["38m", "36m", "32m", "65m"], "correct": "36m"}, {"q": "What is the perimeter of a rectangle 14m by 6m?", "options": ["42m", "36m", "84m", "40m"], "correct": "40m"}, {"q": "Solve for x: 2x + 5 = 17", "options": ["8", "7", "5", "6"], "correct": "6"}, {"q": "Solve for x: 3x + 4 = 19", "options": ["4", "5", "7", "6"], "correct": "5"}, {"q": "Solve for x: 5x + 3 = 28", "options": ["7", "4", "6", "5"], "correct": "5"}, {"q": "Solve for x: 4x + 6 = 26", "options": ["7", "6", "5", "4"], "correct": "5"}, {"q": "Solve for x: 2x + 7 = 19", "options": ["6", "8", "7", "5"], "correct": "6"}, {"q": "Solve for x: 3x + 2 = 17", "options": ["5", "7", "6", "4"], "correct": "5"}, {"q": "Solve for x: 6x + 4 = 34", "options": ["4", "7", "6", "5"], "correct": "5"}, {"q": "Solve for x: 2x + 9 = 21", "options": ["5", "8", "7", "6"], "correct": "6"}, {"q": "Solve for x: 5x + 1 = 31", "options": ["7", "8", "5", "6"], "correct": "6"}, {"q": "Solve for x: 4x + 3 = 27", "options": ["7", "5", "8", "6"], "correct": "6"}, {"q": "Solve for x: 3x + 5 = 26", "options": ["8", "9", "6", "7"], "correct": "7"}, {"q": "Solve for x: 7x + 2 = 37", "options": ["4", "7", "5", "6"], "correct": "5"}, {"q": "Find the average of 4, 8, 12, and 16.", "options": ["12", "40", "8", "10"], "correct": "10"}, {"q": "Find the average of 2, 4, 6, and 8.", "options": ["5", "7", "3", "20"], "correct": "5"}, {"q": "Find the average of 10, 20, 30, and 40.", "options": ["27", "100", "25", "23"], "correct": "25"}, {"q": "Find the average of 5, 10, 15, and 20.", "options": ["10", "12", "50", "14"], "correct": "12"}, {"q": "Find the average of 3, 6, 9, and 12.", "options": ["30", "5", "9", "7"], "correct": "7"}, {"q": "Find the average of 7, 14, 21, and 28.", "options": ["19", "17", "15", "70"], "correct": "17"}, {"q": "Find the average of 6, 12, 18, and 24.", "options": ["17", "60", "13", "15"], "correct": "15"}, {"q": "Find the average of 9, 18, 27, and 36.", "options": ["90", "24", "20", "22"], "correct": "22"}, {"q": "Find the average of 11, 22, 33, and 44.", "options": ["29", "110", "25", "27"], "correct": "27"}, {"q": "Find the average of 1, 2, 3, and 4.", "options": ["2", "4", "10", "0"], "correct": "2"}, {"q": "Convert 1/2 to a percentage.", "options": ["20%", "50%", "60%", "90%"], "correct": "50%"}, {"q": "Convert 1/4 to a percentage.", "options": ["50%", "75%", "25%", "33.3%"], "correct": "25%"}, {"q": "Convert 3/4 to a percentage.", "options": ["50%", "10%", "75%", "25%"], "correct": "75%"}, {"q": "Convert 3/5 to a percentage.", "options": ["66.6%", "25%", "70%", "60%"], "correct": "60%"}, {"q": "Convert 2/5 to a percentage.", "options": ["50%", "25%", "40%", "75%"], "correct": "40%"}, {"q": "Convert 1/5 to a percentage.", "options": ["20%", "50%", "90%", "25%"], "correct": "20%"}, {"q": "Convert 1/10 to a percentage.", "options": ["70%", "30%", "10%", "90%"], "correct": "10%"}, {"q": "Convert 3/10 to a percentage.", "options": ["70%", "60%", "30%", "10%"], "correct": "30%"}, {"q": "Convert 7/10 to a percentage.", "options": ["70%", "10%", "75%", "30%"], "correct": "70%"}, {"q": "Convert 9/10 to a percentage.", "options": ["66.6%", "25%", "33.3%", "90%"], "correct": "90%"}, {"q": "Convert 1/8 to a percentage.", "options": ["12.5%", "20%", "10%", "33.3%"], "correct": "12.5%"}, {"q": "Convert 1/3 to a percentage.", "options": ["25%", "33.3%", "60%", "75%"], "correct": "33.3%"}, {"q": "What is the LCM of 4 and 6?", "options": ["6", "16", "12", "24"], "correct": "12"}, {"q": "What is the LCM of 3 and 5?", "options": ["18", "5", "16", "15"], "correct": "15"}, {"q": "What is the LCM of 6 and 8?", "options": ["24", "30", "48", "8"], "correct": "24"}, {"q": "What is the LCM of 4 and 10?", "options": ["40", "10", "20", "24"], "correct": "20"}, {"q": "What is the LCM of 9 and 12?", "options": ["36", "108", "12", "45"], "correct": "36"}, {"q": "What is the LCM of 5 and 15?", "options": ["75", "20", "15", "16"], "correct": "15"}, {"q": "What is the LCM of 6 and 10?", "options": ["60", "30", "10", "36"], "correct": "30"}, {"q": "What is the LCM of 8 and 12?", "options": ["96", "32", "24", "12"], "correct": "24"}, {"q": "What is the LCM of 7 and 14?", "options": ["21", "14", "15", "98"], "correct": "14"}, {"q": "What is the LCM of 6 and 9?", "options": ["54", "24", "9", "18"], "correct": "18"}, {"q": "What is the HCF (GCD) of 18 and 24?", "options": ["6", "8", "12", "18"], "correct": "6"}, {"q": "What is the HCF (GCD) of 12 and 16?", "options": ["12", "6", "4", "8"], "correct": "4"}, {"q": "What is the HCF (GCD) of 20 and 30?", "options": ["10", "12", "11", "20"], "correct": "10"}, {"q": "What is the HCF (GCD) of 15 and 25?", "options": ["5", "7", "10", "15"], "correct": "5"}, {"q": "What is the HCF (GCD) of 9 and 12?", "options": ["5", "9", "3", "6"], "correct": "3"}, {"q": "What is the HCF (GCD) of 14 and 21?", "options": ["7", "9", "14", "8"], "correct": "7"}, {"q": "What is the HCF (GCD) of 16 and 24?", "options": ["10", "9", "8", "16"], "correct": "8"}, {"q": "What is the HCF (GCD) of 10 and 15?", "options": ["6", "5", "10", "7"], "correct": "5"}, {"q": "What is the HCF (GCD) of 28 and 42?", "options": ["16", "14", "15", "28"], "correct": "14"}, {"q": "What is the HCF (GCD) of 8 and 20?", "options": ["4", "8", "5", "6"], "correct": "4"}, {"q": "What is 4²?", "options": ["8", "20", "16", "12"], "correct": "16"}, {"q": "What is 9²?", "options": ["72", "90", "81", "18"], "correct": "81"}, {"q": "What is 12²?", "options": ["144", "24", "156", "132"], "correct": "144"}, {"q": "What is 15²?", "options": ["240", "225", "30", "210"], "correct": "225"}, {"q": "What is 20²?", "options": ["400", "380", "40", "420"], "correct": "400"}, {"q": "What is 7²?", "options": ["49", "42", "56", "14"], "correct": "49"}, {"q": "What is 11²?", "options": ["110", "22", "132", "121"], "correct": "121"}, {"q": "What is 13²?", "options": ["169", "26", "182", "156"], "correct": "169"}, {"q": "What is 6²?", "options": ["30", "12", "42", "36"], "correct": "36"}, {"q": "What is 16²?", "options": ["240", "256", "272", "32"], "correct": "256"}, {"q": "What is 25²?", "options": ["625", "50", "600", "650"], "correct": "625"}, {"q": "What is 18²?", "options": ["324", "342", "306", "36"], "correct": "324"}, {"q": "What is the square root of 4?", "options": ["1", "3", "4", "2"], "correct": "2"}, {"q": "What is the square root of 9?", "options": ["3", "2", "5", "4"], "correct": "3"}, {"q": "What is the square root of 16?", "options": ["5", "3", "4", "6"], "correct": "4"}, {"q": "What is the square root of 25?", "options": ["7", "5", "4", "6"], "correct": "5"}, {"q": "What is the square root of 36?", "options": ["7", "6", "8", "5"], "correct": "6"}, {"q": "What is the square root of 49?", "options": ["8", "6", "7", "9"], "correct": "7"}, {"q": "What is the square root of 64?", "options": ["7", "10", "9", "8"], "correct": "8"}, {"q": "What is the square root of 81?", "options": ["9", "8", "11", "10"], "correct": "9"}, {"q": "What is the square root of 100?", "options": ["10", "12", "11", "9"], "correct": "10"}, {"q": "What is the square root of 121?", "options": ["10", "12", "11", "13"], "correct": "11"}, {"q": "What is the square root of 144?", "options": ["11", "12", "14", "13"], "correct": "12"}, {"q": "What is the square root of 169?", "options": ["12", "15", "13", "14"], "correct": "13"}, {"q": "If 5 identical hoses cost TT$250 in total, what is the cost of one hose?", "options": ["TT$50", "TT$45", "TT$55", "TT$1250"], "correct": "TT$50"}, {"q": "If 4 identical hoses cost TT$120 in total, what is the cost of one hose?", "options": ["TT$480", "TT$25", "TT$35", "TT$30"], "correct": "TT$30"}, {"q": "If 6 identical hoses cost TT$180 in total, what is the cost of one hose?", "options": ["TT$25", "TT$35", "TT$30", "TT$1080"], "correct": "TT$30"}, {"q": "If 3 identical hoses cost TT$90 in total, what is the cost of one hose?", "options": ["TT$30", "TT$25", "TT$35", "TT$270"], "correct": "TT$30"}, {"q": "If 5 identical hoses cost TT$300 in total, what is the cost of one hose?", "options": ["TT$60", "TT$55", "TT$65", "TT$1500"], "correct": "TT$60"}, {"q": "If 3 identical hoses cost TT$150 in total, what is the cost of one hose?", "options": ["TT$450", "TT$50", "TT$45", "TT$55"], "correct": "TT$50"}, {"q": "If 8 identical hoses cost TT$240 in total, what is the cost of one hose?", "options": ["TT$25", "TT$35", "TT$30", "TT$1920"], "correct": "TT$30"}, {"q": "If 10 identical hoses cost TT$400 in total, what is the cost of one hose?", "options": ["TT$4000", "TT$35", "TT$45", "TT$40"], "correct": "TT$40"}, {"q": "If 7 identical hoses cost TT$210 in total, what is the cost of one hose?", "options": ["TT$25", "TT$30", "TT$35", "TT$1470"], "correct": "TT$30"}, {"q": "If 4 identical hoses cost TT$160 in total, what is the cost of one hose?", "options": ["TT$45", "TT$35", "TT$40", "TT$640"], "correct": "TT$40"}, {"q": "Convert 3km into metres.", "options": ["3010m", "6000m", "3000m", "1500m"], "correct": "3000m"}, {"q": "Convert 5km into metres.", "options": ["5010m", "10000m", "2500m", "5000m"], "correct": "5000m"}, {"q": "Convert 2.5km into metres.", "options": ["5000m", "2510m", "1250m", "2500m"], "correct": "2500m"}, {"q": "Convert 2 hours 30 minutes into minutes.", "options": ["300", "150", "75", "160"], "correct": "150"}, {"q": "Convert 3 hours 15 minutes into minutes.", "options": ["205", "97", "390", "195"], "correct": "195"}, {"q": "Convert 1 hour 45 minutes into minutes.", "options": ["105", "210", "115", "52"], "correct": "105"}, {"q": "Convert 4000m into kilometres.", "options": ["4.1km", "2km", "8km", "4km"], "correct": "4km"}, {"q": "Convert 2500m into kilometres.", "options": ["2.5km", "5km", "2.6km", "1.25km"], "correct": "2.5km"}, {"q": "Convert 180 minutes into hours.", "options": ["6 hours", "3.5 hours", "1.5 hours", "3 hours"], "correct": "3 hours"}, {"q": "Convert 150 minutes into hours.", "options": ["2.5 hours", "3 hours", "1.25 hours", "5 hours"], "correct": "2.5 hours"}, {"q": "Convert 2 days into hours.", "options": ["58 hours", "48 hours", "24 hours", "96 hours"], "correct": "48 hours"}, {"q": "Convert 3 days into hours.", "options": ["144 hours", "36 hours", "72 hours", "82 hours"], "correct": "72 hours"}, {"q": "What comes next in the sequence: 2, 4, 8, 16, __?", "options": ["30", "34", "32", "37"], "correct": "32"}, {"q": "What comes next in the sequence: 3, 6, 9, 12, __?", "options": ["13", "17", "20", "15"], "correct": "15"}, {"q": "What comes next in the sequence: 5, 10, 15, 20, __?", "options": ["30", "23", "27", "25"], "correct": "25"}, {"q": "What comes next in the sequence: 1, 4, 9, 16, __?", "options": ["30", "25", "27", "23"], "correct": "25"}, {"q": "What comes next in the sequence: 1, 1, 2, 3, 5, __?", "options": ["8", "13", "6", "10"], "correct": "8"}, {"q": "What comes next in the sequence: 10, 20, 30, 40, __?", "options": ["55", "48", "50", "52"], "correct": "50"}, {"q": "What comes next in the sequence: 100, 90, 80, 70, __?", "options": ["65", "62", "58", "60"], "correct": "60"}, {"q": "What comes next in the sequence: 2, 6, 18, 54, __?", "options": ["160", "162", "167", "164"], "correct": "162"}, {"q": "What comes next in the sequence: 1, 3, 5, 7, __?", "options": ["9", "7", "14", "11"], "correct": "9"}, {"q": "What comes next in the sequence: 4, 8, 12, 16, __?", "options": ["18", "20", "22", "25"], "correct": "20"}, {"q": "What comes next in the sequence: 3, 9, 27, 81, __?", "options": ["241", "243", "245", "248"], "correct": "243"}, {"q": "What comes next in the sequence: 50, 45, 40, 35, __?", "options": ["35", "28", "32", "30"], "correct": "30"}, {"q": "Round 486 to the nearest hundred.", "options": ["500", "600", "486", "480"], "correct": "500"}, {"q": "Round 732 to the nearest hundred.", "options": ["700", "732", "800", "730"], "correct": "700"}, {"q": "Round 155 to the nearest hundred.", "options": ["200", "150", "155", "300"], "correct": "200"}, {"q": "Round 249 to the nearest hundred.", "options": ["240", "300", "249", "200"], "correct": "200"}, {"q": "Round 981 to the nearest hundred.", "options": ["1000", "1100", "981", "980"], "correct": "1000"}, {"q": "Round 364 to the nearest hundred.", "options": ["364", "500", "400", "360"], "correct": "400"}, {"q": "Round 825 to the nearest hundred.", "options": ["900", "825", "800", "820"], "correct": "800"}, {"q": "Round 617 to the nearest hundred.", "options": ["610", "600", "700", "617"], "correct": "600"}, {"q": "Round 143 to the nearest hundred.", "options": ["200", "143", "100", "140"], "correct": "100"}, {"q": "Round 908 to the nearest hundred.", "options": ["1000", "900", "901", "908"], "correct": "900"}, {"q": "What is 6 × 7 − 5?", "options": ["40", "47", "32", "37"], "correct": "37"}, {"q": "What is 9 × 9 ÷ 3?", "options": ["36", "27", "30", "24"], "correct": "27"}, {"q": "What is 8 × 4 + 3?", "options": ["38", "35", "29", "32"], "correct": "35"}, {"q": "What is 15 × 3 − 4?", "options": ["32", "38", "44", "41"], "correct": "41"}, {"q": "What is 20 ÷ 5 + 6?", "options": ["13", "7", "10", "16"], "correct": "10"}, {"q": "What is 9 × 3 × 7?", "options": ["189", "175", "180", "192"], "correct": "189"}, {"q": "What is 14 + 2 × 8?", "options": ["24", "33", "30", "27"], "correct": "30"}, {"q": "What is 18 ÷ 6 × 4?", "options": ["12", "9", "15", "20"], "correct": "12"}, {"q": "What is the volume of a box 4m × 3m × 2m?", "options": ["52 cubic m", "28 cubic m", "14 cubic m", "24 cubic m"], "correct": "24 cubic m"}, {"q": "What is the volume of a box 5m × 2m × 3m?", "options": ["62 cubic m", "35 cubic m", "30 cubic m", "13 cubic m"], "correct": "30 cubic m"}, {"q": "What is the volume of a box 6m × 4m × 2m?", "options": ["54 cubic m", "26 cubic m", "48 cubic m", "88 cubic m"], "correct": "48 cubic m"}, {"q": "What is the volume of a box 3m × 3m × 3m?", "options": ["54 cubic m", "30 cubic m", "12 cubic m", "27 cubic m"], "correct": "27 cubic m"}, {"q": "What is the volume of a box 8m × 2m × 2m?", "options": ["32 cubic m", "72 cubic m", "18 cubic m", "40 cubic m"], "correct": "32 cubic m"}, {"q": "What is the volume of a box 5m × 5m × 2m?", "options": ["50 cubic m", "27 cubic m", "90 cubic m", "55 cubic m"], "correct": "50 cubic m"}, {"q": "What is the volume of a box 10m × 2m × 3m?", "options": ["23 cubic m", "70 cubic m", "112 cubic m", "60 cubic m"], "correct": "60 cubic m"}, {"q": "What is the volume of a box 4m × 4m × 4m?", "options": ["96 cubic m", "20 cubic m", "64 cubic m", "68 cubic m"], "correct": "64 cubic m"}, {"q": "An item is bought for TT$100 and sold for TT$120. What is the percentage profit?", "options": ["17%", "20%", "15%", "25%"], "correct": "20%"}, {"q": "An item is bought for TT$200 and sold for TT$250. What is the percentage profit?", "options": ["25%", "30%", "20%", "26%"], "correct": "25%"}, {"q": "An item is bought for TT$50 and sold for TT$60. What is the percentage profit?", "options": ["25%", "15%", "20%", "17%"], "correct": "20%"}, {"q": "An item is bought for TT$80 and sold for TT$100. What is the percentage profit?", "options": ["20%", "30%", "26%", "25%"], "correct": "25%"}, {"q": "An item is bought for TT$150 and sold for TT$180. What is the percentage profit?", "options": ["25%", "15%", "20%", "17%"], "correct": "20%"}, {"q": "An item is bought for TT$40 and sold for TT$50. What is the percentage profit?", "options": ["26%", "25%", "20%", "30%"], "correct": "25%"}, {"q": "An item is bought for TT$300 and sold for TT$360. What is the percentage profit?", "options": ["20%", "15%", "25%", "17%"], "correct": "20%"}, {"q": "An item is bought for TT$120 and sold for TT$150. What is the percentage profit?", "options": ["30%", "25%", "20%", "26%"], "correct": "25%"}, {"q": "A hose fills a tank at 20L per minute. How many minutes to fill 500L?", "options": ["30 minutes", "25 minutes", "20 minutes", "26 minutes"], "correct": "25 minutes"}, {"q": "A hose fills a tank at 15L per minute. How many minutes to fill 300L?", "options": ["20 minutes", "25 minutes", "15 minutes", "21 minutes"], "correct": "20 minutes"}, {"q": "A hose fills a tank at 30L per minute. How many minutes to fill 600L?", "options": ["30 minutes", "25 minutes", "20 minutes", "15 minutes"], "correct": "20 minutes"}, {"q": "A hose fills a tank at 25L per minute. How many minutes to fill 400L?", "options": ["16 minutes", "11 minutes", "25 minutes", "21 minutes"], "correct": "16 minutes"}, {"q": "A hose fills a tank at 20L per minute. How many minutes to fill 240L?", "options": ["7 minutes", "12 minutes", "20 minutes", "17 minutes"], "correct": "12 minutes"}, {"q": "A hose fills a tank at 24L per minute. How many minutes to fill 360L?", "options": ["15 minutes", "20 minutes", "24 minutes", "10 minutes"], "correct": "15 minutes"}, {"q": "A hose fills a tank at 32L per minute. How many minutes to fill 480L?", "options": ["32 minutes", "10 minutes", "20 minutes", "15 minutes"], "correct": "15 minutes"}, {"q": "A hose fills a tank at 10L per minute. How many minutes to fill 200L?", "options": ["15 minutes", "10 minutes", "20 minutes", "25 minutes"], "correct": "20 minutes"}, {"q": "A worker earns TT$18 per hour for a 40-hour week. What is the weekly pay?", "options": ["TT$738", "TT$760", "TT$680", "TT$720"], "correct": "TT$720"}, {"q": "A worker earns TT$20 per hour for a 35-hour week. What is the weekly pay?", "options": ["TT$665", "TT$720", "TT$735", "TT$700"], "correct": "TT$700"}, {"q": "A worker earns TT$22 per hour for a 38-hour week. What is the weekly pay?", "options": ["TT$874", "TT$798", "TT$836", "TT$858"], "correct": "TT$836"}, {"q": "A worker earns TT$25 per hour for a 32-hour week. What is the weekly pay?", "options": ["TT$825", "TT$832", "TT$768", "TT$800"], "correct": "TT$800"}, {"q": "A worker earns TT$15 per hour for a 45-hour week. What is the weekly pay?", "options": ["TT$630", "TT$720", "TT$675", "TT$690"], "correct": "TT$675"}, {"q": "A worker earns TT$30 per hour for a 30-hour week. What is the weekly pay?", "options": ["TT$901", "TT$900", "TT$870", "TT$930"], "correct": "TT$900"}, {"q": "A worker earns TT$24 per hour for a 36-hour week. What is the weekly pay?", "options": ["TT$888", "TT$900", "TT$864", "TT$828"], "correct": "TT$864"}, {"q": "A worker earns TT$28 per hour for a 34-hour week. What is the weekly pay?", "options": ["TT$980", "TT$986", "TT$952", "TT$918"], "correct": "TT$952"}],
+  english: [{"q": "Choose the synonym of \"brave\".", "options": ["careless", "timid", "courageous", "weak"], "correct": "courageous"}, {"q": "Choose the synonym of \"quick\".", "options": ["slow", "lazy", "calm", "swift"], "correct": "swift"}, {"q": "Choose the synonym of \"enormous\".", "options": ["tiny", "huge", "slight", "average"], "correct": "huge"}, {"q": "Choose the synonym of \"assist\".", "options": ["delay", "ignore", "help", "hinder"], "correct": "help"}, {"q": "Choose the synonym of \"begin\".", "options": ["pause", "commence", "end", "stop"], "correct": "commence"}, {"q": "Choose the synonym of \"happy\".", "options": ["angry", "bored", "joyful", "sad"], "correct": "joyful"}, {"q": "Choose the synonym of \"difficult\".", "options": ["simple", "dull", "easy", "challenging"], "correct": "challenging"}, {"q": "Choose the synonym of \"angry\".", "options": ["pleased", "furious", "content", "calm"], "correct": "furious"}, {"q": "Choose the synonym of \"smart\".", "options": ["foolish", "slow", "intelligent", "dull"], "correct": "intelligent"}, {"q": "Choose the synonym of \"tired\".", "options": ["energetic", "fresh", "alert", "exhausted"], "correct": "exhausted"}, {"q": "Choose the synonym of \"quiet\".", "options": ["booming", "silent", "loud", "noisy"], "correct": "silent"}, {"q": "Choose the synonym of \"strong\".", "options": ["fragile", "weak", "feeble", "powerful"], "correct": "powerful"}, {"q": "Choose the synonym of \"small\".", "options": ["gigantic", "massive", "tiny", "huge"], "correct": "tiny"}, {"q": "Choose the synonym of \"fast\".", "options": ["sluggish", "gradual", "rapid", "slow"], "correct": "rapid"}, {"q": "Choose the synonym of \"old\".", "options": ["modern", "recent", "new", "ancient"], "correct": "ancient"}, {"q": "Choose the synonym of \"clever\".", "options": ["cunning", "naive", "simple", "innocent"], "correct": "cunning"}, {"q": "Choose the synonym of \"polite\".", "options": ["courteous", "disrespectful", "rude", "impolite"], "correct": "courteous"}, {"q": "Choose the synonym of \"wet\".", "options": ["parched", "damp", "dry", "arid"], "correct": "damp"}, {"q": "Choose the synonym of \"thin\".", "options": ["broad", "slender", "chubby", "stout"], "correct": "slender"}, {"q": "Choose the synonym of \"hot\".", "options": ["chilly", "cold", "freezing", "scorching"], "correct": "scorching"}, {"q": "Choose the synonym of \"cold\".", "options": ["frigid", "warm", "hot", "tropical"], "correct": "frigid"}, {"q": "Choose the synonym of \"bright\".", "options": ["dim", "radiant", "dark", "dull"], "correct": "radiant"}, {"q": "Choose the synonym of \"calm\".", "options": ["frantic", "chaotic", "turbulent", "serene"], "correct": "serene"}, {"q": "Choose the synonym of \"honest\".", "options": ["dishonest", "truthful", "misleading", "deceptive"], "correct": "truthful"}, {"q": "Choose the synonym of \"generous\".", "options": ["selfish", "charitable", "stingy", "greedy"], "correct": "charitable"}, {"q": "Choose the synonym of \"dangerous\".", "options": ["secure", "safe", "harmless", "hazardous"], "correct": "hazardous"}, {"q": "Choose the synonym of \"important\".", "options": ["crucial", "trivial", "insignificant", "minor"], "correct": "crucial"}, {"q": "Choose the synonym of \"build\".", "options": ["construct", "demolish", "destroy", "dismantle"], "correct": "construct"}, {"q": "Choose the synonym of \"finish\".", "options": ["start", "begin", "commence", "complete"], "correct": "complete"}, {"q": "Choose the synonym of \"gather\".", "options": ["scatter", "assemble", "disperse", "separate"], "correct": "assemble"}, {"q": "Choose the synonym of \"show\".", "options": ["obscure", "hide", "conceal", "display"], "correct": "display"}, {"q": "Choose the synonym of \"agree\".", "options": ["concur", "dispute", "disagree", "object"], "correct": "concur"}, {"q": "Choose the synonym of \"permit\".", "options": ["refuse", "forbid", "allow", "deny"], "correct": "allow"}, {"q": "Choose the synonym of \"rescue\".", "options": ["abandon", "neglect", "save", "endanger"], "correct": "save"}, {"q": "Choose the synonym of \"protect\".", "options": ["expose", "endanger", "shield", "abandon"], "correct": "shield"}, {"q": "Choose the synonym of \"wisdom\".", "options": ["ignorance", "naivety", "insight", "foolishness"], "correct": "insight"}, {"q": "Choose the synonym of \"courage\".", "options": ["valor", "fear", "cowardice", "timidity"], "correct": "valor"}, {"q": "Choose the synonym of \"ask\".", "options": ["ignore", "answer", "reply", "inquire"], "correct": "inquire"}, {"q": "Choose the synonym of \"answer\".", "options": ["respond", "ask", "question", "query"], "correct": "respond"}, {"q": "Choose the synonym of \"mistake\".", "options": ["error", "triumph", "achievement", "success"], "correct": "error"}, {"q": "Choose the synonym of \"job\".", "options": ["occupation", "rest", "hobby", "leisure"], "correct": "occupation"}, {"q": "Choose the synonym of \"group\".", "options": ["one", "single", "cluster", "individual"], "correct": "cluster"}, {"q": "Choose the synonym of \"look\".", "options": ["miss", "overlook", "observe", "ignore"], "correct": "observe"}, {"q": "Choose the synonym of \"keep\".", "options": ["release", "abandon", "retain", "discard"], "correct": "retain"}, {"q": "Choose the synonym of \"stop\".", "options": ["halt", "proceed", "advance", "continue"], "correct": "halt"}, {"q": "Choose the synonym of \"large\".", "options": ["slight", "minor", "small", "substantial"], "correct": "substantial"}, {"q": "Choose the synonym of \"crucial\".", "options": ["vital", "trivial", "minor", "unimportant"], "correct": "vital"}, {"q": "Choose the synonym of \"harm\".", "options": ["fix", "damage", "heal", "repair"], "correct": "damage"}, {"q": "Choose the synonym of \"odd\".", "options": ["strange", "normal", "typical", "usual"], "correct": "strange"}, {"q": "Choose the synonym of \"plenty\".", "options": ["abundant", "limited", "scarce", "insufficient"], "correct": "abundant"}, {"q": "Choose the synonym of \"brief\".", "options": ["prolonged", "extended", "lengthy", "concise"], "correct": "concise"}, {"q": "Choose the synonym of \"empty\".", "options": ["full", "occupied", "filled", "vacant"], "correct": "vacant"}, {"q": "Choose the synonym of \"famous\".", "options": ["obscure", "renowned", "anonymous", "unknown"], "correct": "renowned"}, {"q": "Choose the synonym of \"gloomy\".", "options": ["bright", "sunny", "cheerful", "dismal"], "correct": "dismal"}, {"q": "Choose the synonym of \"hazard\".", "options": ["safety", "security", "protection", "risk"], "correct": "risk"}, {"q": "Choose the synonym of \"idle\".", "options": ["active", "occupied", "busy", "inactive"], "correct": "inactive"}, {"q": "Choose the synonym of \"journey\".", "options": ["rest", "stay", "pause", "voyage"], "correct": "voyage"}, {"q": "Choose the antonym of \"extinguish\".", "options": ["ignite", "quench", "smother", "douse"], "correct": "ignite"}, {"q": "Choose the antonym of \"increase\".", "options": ["decrease", "expand", "raise", "grow"], "correct": "decrease"}, {"q": "Choose the antonym of \"difficult\".", "options": ["hard", "complex", "easy", "tough"], "correct": "easy"}, {"q": "Choose the antonym of \"ancient\".", "options": ["modern", "aged", "old", "historic"], "correct": "modern"}, {"q": "Choose the antonym of \"brave\".", "options": ["fearless", "cowardly", "bold", "daring"], "correct": "cowardly"}, {"q": "Choose the antonym of \"begin\".", "options": ["commence", "launch", "end", "start"], "correct": "end"}, {"q": "Choose the antonym of \"arrive\".", "options": ["appear", "depart", "reach", "land"], "correct": "depart"}, {"q": "Choose the antonym of \"accept\".", "options": ["welcome", "approve", "embrace", "reject"], "correct": "reject"}, {"q": "Choose the antonym of \"major\".", "options": ["significant", "minor", "large", "huge"], "correct": "minor"}, {"q": "Choose the antonym of \"victory\".", "options": ["triumph", "defeat", "success", "win"], "correct": "defeat"}, {"q": "Choose the antonym of \"expand\".", "options": ["shrink", "grow", "widen", "enlarge"], "correct": "shrink"}, {"q": "Choose the antonym of \"hero\".", "options": ["victor", "villain", "protagonist", "champion"], "correct": "villain"}, {"q": "Choose the antonym of \"include\".", "options": ["contain", "exclude", "involve", "incorporate"], "correct": "exclude"}, {"q": "Choose the antonym of \"permanent\".", "options": ["enduring", "stable", "temporary", "lasting"], "correct": "temporary"}, {"q": "Choose the antonym of \"strengthen\".", "options": ["fortify", "empower", "weaken", "reinforce"], "correct": "weaken"}, {"q": "Choose the antonym of \"attack\".", "options": ["assault", "defend", "strike", "invade"], "correct": "defend"}, {"q": "Choose the antonym of \"praise\".", "options": ["applaud", "commend", "compliment", "criticize"], "correct": "criticize"}, {"q": "Choose the antonym of \"early\".", "options": ["timely", "punctual", "late", "prompt"], "correct": "late"}, {"q": "Choose the antonym of \"wet\".", "options": ["dry", "damp", "moist", "soggy"], "correct": "dry"}, {"q": "Choose the antonym of \"heavy\".", "options": ["weighty", "hefty", "light", "dense"], "correct": "light"}, {"q": "Choose the antonym of \"rise\".", "options": ["ascend", "climb", "soar", "fall"], "correct": "fall"}, {"q": "Choose the antonym of \"cheap\".", "options": ["inexpensive", "expensive", "economical", "affordable"], "correct": "expensive"}, {"q": "Choose the antonym of \"polite\".", "options": ["courteous", "rude", "respectful", "gracious"], "correct": "rude"}, {"q": "Choose the antonym of \"safe\".", "options": ["dangerous", "secure", "protected", "harmless"], "correct": "dangerous"}, {"q": "Choose the antonym of \"calm\".", "options": ["peaceful", "tranquil", "serene", "chaotic"], "correct": "chaotic"}, {"q": "Choose the antonym of \"generous\".", "options": ["giving", "stingy", "charitable", "kind"], "correct": "stingy"}, {"q": "Choose the antonym of \"full\".", "options": ["packed", "filled", "empty", "loaded"], "correct": "empty"}, {"q": "Choose the antonym of \"open\".", "options": ["accessible", "ajar", "closed", "unlocked"], "correct": "closed"}, {"q": "Choose the antonym of \"true\".", "options": ["correct", "false", "accurate", "valid"], "correct": "false"}, {"q": "Choose the antonym of \"ask\".", "options": ["request", "question", "answer", "inquire"], "correct": "answer"}, {"q": "Choose the antonym of \"build\".", "options": ["erect", "construct", "establish", "demolish"], "correct": "demolish"}, {"q": "Choose the antonym of \"gather\".", "options": ["scatter", "unite", "collect", "assemble"], "correct": "scatter"}, {"q": "Choose the antonym of \"hide\".", "options": ["conceal", "mask", "reveal", "obscure"], "correct": "reveal"}, {"q": "Choose the antonym of \"agree\".", "options": ["concur", "accept", "approve", "disagree"], "correct": "disagree"}, {"q": "Choose the antonym of \"allow\".", "options": ["grant", "forbid", "authorize", "permit"], "correct": "forbid"}, {"q": "Choose the antonym of \"save\".", "options": ["protect", "preserve", "abandon", "rescue"], "correct": "abandon"}, {"q": "Choose the antonym of \"employ\".", "options": ["recruit", "dismiss", "engage", "hire"], "correct": "dismiss"}, {"q": "Choose the antonym of \"succeed\".", "options": ["fail", "achieve", "triumph", "prevail"], "correct": "fail"}, {"q": "Choose the antonym of \"wide\".", "options": ["spacious", "expansive", "narrow", "broad"], "correct": "narrow"}, {"q": "Choose the antonym of \"simple\".", "options": ["complex", "easy", "plain", "basic"], "correct": "complex"}, {"q": "Choose the antonym of \"noisy\".", "options": ["clamorous", "quiet", "boisterous", "loud"], "correct": "quiet"}, {"q": "Choose the antonym of \"plentiful\".", "options": ["ample", "copious", "abundant", "scarce"], "correct": "scarce"}, {"q": "Choose the correct spelling.", "options": ["Recieve", "Receve", "Receeve", "Receive"], "correct": "Receive"}, {"q": "Yesterday, the firefighters ___ to the scene.", "options": ["rushing", "rushed", "rushes", "rush"], "correct": "rushed"}, {"q": "Which sentence is grammatically correct?", "options": ["He doesn't knows.", "He not know.", "He don't know.", "He doesn't know."], "correct": "He doesn't know."}, {"q": "What is the plural of \"child\"?", "options": ["childs", "childrens", "childes", "children"], "correct": "children"}, {"q": "Choose the correct word: \"___ going to the fire station.\"", "options": ["There", "Theyre", "They're", "Their"], "correct": "They're"}, {"q": "Choose the correct word: \"___ a hot day.\"", "options": ["Its'", "Its", "Their", "It's"], "correct": "It's"}, {"q": "Choose the correct sentence.", "options": ["Him and me went.", "Me and him went.", "I and him went.", "He and I went."], "correct": "He and I went."}, {"q": "What is the correct plural of \"man\"?", "options": ["mans", "men", "manes", "men's"], "correct": "men"}, {"q": "Choose the correct word: \"The team ___ working hard.\"", "options": ["is", "were", "are", "be"], "correct": "is"}, {"q": "Choose the correct word: \"Neither of them ___ ready.\"", "options": ["is", "be", "were", "are"], "correct": "is"}, {"q": "What is the correct past tense of \"go\"?", "options": ["gone", "went", "going", "goed"], "correct": "went"}, {"q": "Choose the correct article: \"___ umbrella is red.\"", "options": ["The", "A", "An", "No article needed"], "correct": "An"}, {"q": "Choose the correct word: \"There ___ many people at the scene.\"", "options": ["is", "were", "was", "be"], "correct": "were"}, {"q": "Choose the correct conjunction: \"I wanted to go, ___ it rained.\"", "options": ["or", "but", "so", "and"], "correct": "but"}, {"q": "Choose the correct preposition: \"The cat is hiding ___ the table.\"", "options": ["under", "at", "on", "in"], "correct": "under"}, {"q": "Choose the correct word: \"He is one of the students who ___ late.\"", "options": ["was", "is", "be", "are"], "correct": "are"}, {"q": "Choose the correct word: \"By next year, she ___ here for a decade.\"", "options": ["will working", "will have worked", "would working", "will worked"], "correct": "will have worked"}, {"q": "Choose the correct word: \"The news ___ surprising.\"", "options": ["are", "were", "is", "have been"], "correct": "is"}, {"q": "Choose the correct word: \"She is taller than ___.\"", "options": ["myself", "I", "me", "mine"], "correct": "I"}, {"q": "Choose the correct word: \"Everyone must bring ___ own lunch.\"", "options": ["they're", "there", "his or her", "their"], "correct": "his or her"}, {"q": "Choose the correct word: \"The jury ___ reached a verdict.\"", "options": ["has", "having", "have", "were"], "correct": "has"}, {"q": "Choose the correct word: \"I wish I ___ taller.\"", "options": ["were", "am", "be", "was"], "correct": "were"}, {"q": "Choose the correct word: \"This is the book ___ I told you about.\"", "options": ["whose", "who", "whom", "that"], "correct": "that"}, {"q": "Identify the noun: \"The brave firefighter climbed the ladder.\"", "options": ["the", "brave", "climbed", "firefighter"], "correct": "firefighter"}, {"q": "Identify the verb: \"She wrote a report.\"", "options": ["she", "wrote", "a", "report"], "correct": "wrote"}, {"q": "Identify the adjective: \"The tall building caught fire.\"", "options": ["tall", "caught", "building", "fire"], "correct": "tall"}, {"q": "Identify the subject: \"The dog barked loudly.\"", "options": ["barked", "loudly", "the", "dog"], "correct": "dog"}, {"q": "Identify the adverb: \"He ran quickly to safety.\"", "options": ["safety", "ran", "he", "quickly"], "correct": "quickly"}, {"q": "Identify the pronoun: \"She gave it to him.\"", "options": ["gave", "him", "She", "to"], "correct": "She"}, {"q": "Identify the adverb: \"The old car broke down suddenly.\"", "options": ["broke", "old", "suddenly", "car"], "correct": "suddenly"}, {"q": "Identify the adverb: \"Firefighters bravely entered the building.\"", "options": ["building", "bravely", "Firefighters", "entered"], "correct": "bravely"}, {"q": "Identify the adjective: \"The heavy rain flooded the street.\"", "options": ["heavy", "rain", "flooded", "street"], "correct": "heavy"}, {"q": "Identify the adverb: \"They quickly extinguished the fire.\"", "options": ["extinguished", "fire", "They", "quickly"], "correct": "quickly"}, {"q": "Identify the noun: \"The siren wailed across the city.\"", "options": ["across", "siren", "city", "wailed"], "correct": "siren"}, {"q": "Identify the adverb: \"He carefully checked the equipment.\"", "options": ["checked", "he", "carefully", "equipment"], "correct": "carefully"}, {"q": "What does the affix \"re-\" mean?", "options": ["before", "under", "again, as in \"rebuild\"", "not"], "correct": "again, as in \"rebuild\""}, {"q": "What does the affix \"un-\" mean?", "options": ["over", "before", "again", "not, as in \"unsafe\""], "correct": "not, as in \"unsafe\""}, {"q": "What does the affix \"pre-\" mean?", "options": ["again", "after", "before, as in \"prepare\"", "under"], "correct": "before, as in \"prepare\""}, {"q": "What does the affix \"mis-\" mean?", "options": ["again", "wrongly, as in \"misunderstand\"", "correctly", "before"], "correct": "wrongly, as in \"misunderstand\""}, {"q": "What does the affix \"sub-\" mean?", "options": ["above", "after", "around", "under, as in \"submarine\""], "correct": "under, as in \"submarine\""}, {"q": "What does the affix \"over-\" mean?", "options": ["before", "too little", "around", "too much, as in \"overcook\""], "correct": "too much, as in \"overcook\""}, {"q": "What does the affix \"-ful\" mean?", "options": ["without", "before", "again", "full of, as in \"careful\""], "correct": "full of, as in \"careful\""}, {"q": "What does the affix \"-less\" mean?", "options": ["without, as in \"careless\"", "full of", "again", "before"], "correct": "without, as in \"careless\""}],
+  gk: [{"q": "What is the capital of Trinidad and Tobago?", "options": ["Chaguanas", "Port of Spain", "Scarborough", "San Fernando"], "correct": "Port of Spain"}, {"q": "What is the capital of Tobago?", "options": ["Scarborough", "Plymouth", "Charlotteville", "Roxborough"], "correct": "Scarborough"}, {"q": "What is the largest municipality in Trinidad by population?", "options": ["Arima", "San Fernando", "Point Fortin", "Chaguanas"], "correct": "Chaguanas"}, {"q": "What is the second city of Trinidad, located in the south?", "options": ["Chaguanas", "San Fernando", "Arima", "Point Fortin"], "correct": "San Fernando"}, {"q": "What is the highest point in Trinidad and Tobago?", "options": ["El Cerro del Aripo", "Signal Hill", "Chaguaramas Peak", "Mount Tamana"], "correct": "El Cerro del Aripo"}, {"q": "Approximately how tall is El Cerro del Aripo, Trinidad's highest peak?", "options": ["1500 metres", "940 metres", "500 metres", "300 metres"], "correct": "940 metres"}, {"q": "Which mountain range dominates northern Trinidad?", "options": ["The Aripo Range", "The Northern Range", "The Southern Range", "The Central Range"], "correct": "The Northern Range"}, {"q": "What is the total land area of Trinidad and Tobago approximately?", "options": ["2,000 sq km", "5,128 sq km", "10,000 sq km", "500 sq km"], "correct": "5,128 sq km"}, {"q": "Which island is larger, Trinidad or Tobago?", "options": ["Tobago", "They are equal in size", "Neither, they are one island", "Trinidad"], "correct": "Trinidad"}, {"q": "Approximately how far is Tobago from Trinidad?", "options": ["About 100 km", "About 300 km", "About 30 km (21 miles)", "About 5 km"], "correct": "About 30 km (21 miles)"}, {"q": "Which sea lies to the west of Trinidad, separating it from Venezuela?", "options": ["The Gulf of Paria", "The Red Sea", "The Sargasso Sea", "The Bay of Bengal"], "correct": "The Gulf of Paria"}, {"q": "Which ocean lies to the east of Trinidad and Tobago?", "options": ["The Atlantic Ocean", "The Indian Ocean", "The Pacific Ocean", "The Arctic Ocean"], "correct": "The Atlantic Ocean"}, {"q": "Trinidad and Tobago is located just northeast of which South American country?", "options": ["Guyana", "Venezuela", "Colombia", "Brazil"], "correct": "Venezuela"}, {"q": "What famous natural asphalt deposit is found in La Brea, Trinidad?", "options": ["The Asphalt Basin", "The Tar Pit", "The Black Lagoon", "The Pitch Lake"], "correct": "The Pitch Lake"}, {"q": "Which borough of Trinidad is known for its oil and gas industry in the south-west?", "options": ["Point Fortin", "Chaguanas", "Sangre Grande", "Arima"], "correct": "Point Fortin"}, {"q": "What is the name of the historic town known as the 'Cultural and Amerindian capital' of Trinidad?", "options": ["Arima", "Toco", "Sangre Grande", "Siparia"], "correct": "Arima"}, {"q": "Which region of Trinidad includes Piarco, home to the country's main international airport?", "options": ["Tunapuna-Piarco", "Diego Martin", "Mayaro-Rio Claro", "Penal-Debe"], "correct": "Tunapuna-Piarco"}, {"q": "Trinidad and Tobago's main international airport, Piarco International Airport, is located near which city?", "options": ["Scarborough", "Port of Spain", "Arima", "San Fernando"], "correct": "Port of Spain"}, {"q": "What is the name of Tobago's main airport?", "options": ["Crown Point Domestic Airport", "ANR Robinson International Airport", "Scarborough Airfield", "Piarco International Airport"], "correct": "ANR Robinson International Airport"}, {"q": "How many regions and municipalities is Trinidad divided into for local government?", "options": ["7", "14", "10", "20"], "correct": "14"}, {"q": "What natural feature separates Trinidad from Tobago?", "options": ["The Caribbean Sea / open water channel", "A canal", "A river", "A land bridge"], "correct": "The Caribbean Sea / open water channel"}, {"q": "Which town in Trinidad is well known for its pilgrimage site, the La Divina Pastora church?", "options": ["Toco", "Moruga", "Siparia", "Blanchisseuse"], "correct": "Siparia"}, {"q": "Where in Trinidad did Christopher Columbus first land in 1498, according to tradition?", "options": ["Moruga", "Toco", "Chaguaramas", "Mayaro"], "correct": "Moruga"}, {"q": "What is the name of the peninsula in north-west Trinidad known for beaches and the former US naval base?", "options": ["Manzanilla", "Mayaro", "Toco", "Chaguaramas"], "correct": "Chaguaramas"}, {"q": "What is Trinidad's longest river?", "options": ["The Caroni River", "The Oropouche River", "The Ortoire River", "The Guayamare River"], "correct": "The Ortoire River"}, {"q": "Which wetland near Port of Spain is a major sanctuary for the Scarlet Ibis?", "options": ["Caroni Swamp", "Pitch Lake", "Nariva Swamp", "Buccoo Reef"], "correct": "Caroni Swamp"}, {"q": "Which protected area in Tobago is one of the oldest legally protected forest reserves in the Western Hemisphere?", "options": ["The Chaguaramas National Park", "The Caroni Swamp Reserve", "The Aripo Savannas", "The Tobago Main Ridge Forest Reserve"], "correct": "The Tobago Main Ridge Forest Reserve"}, {"q": "What is Buccoo Reef, found off the coast of Tobago?", "options": ["A coral reef and marine park", "A mountain range", "A historic fort", "A river delta"], "correct": "A coral reef and marine park"}, {"q": "Which beach in Tobago is famous for Nylon Pool, a shallow sandbar in turquoise water?", "options": ["Store Bay", "Buccoo", "Englishman's Bay", "Pigeon Point"], "correct": "Buccoo"}, {"q": "In what year did Trinidad and Tobago gain independence from Britain?", "options": ["1958", "1970", "1976", "1962"], "correct": "1962"}, {"q": "In what year did Trinidad and Tobago become a republic?", "options": ["1962", "1980", "1990", "1976"], "correct": "1976"}, {"q": "Who was Trinidad and Tobago's first Prime Minister?", "options": ["Eric Williams", "Patrick Manning", "Basdeo Panday", "A.N.R. Robinson"], "correct": "Eric Williams"}, {"q": "Who was Trinidad and Tobago's first President?", "options": ["Eric Williams", "Max Richards", "Ellis Clarke", "A.N.R. Robinson"], "correct": "Ellis Clarke"}, {"q": "Which European explorer is credited with 'discovering' Trinidad for Europe in 1498?", "options": ["Christopher Columbus", "Ferdinand Magellan", "Walter Raleigh", "Vasco da Gama"], "correct": "Christopher Columbus"}, {"q": "Trinidad was named by Columbus after which religious concept, upon seeing three hills?", "options": ["The Holy Trinity", "The Resurrection", "The Ascension", "The Holy Spirit"], "correct": "The Holy Trinity"}, {"q": "Which European power controlled Trinidad for most of the colonial period before the British?", "options": ["Spain", "France", "Portugal", "The Netherlands"], "correct": "Spain"}, {"q": "Tobago changed colonial hands many times; which two powers most famously fought over it?", "options": ["Britain and Spain", "Spain and Portugal", "Holland and Denmark", "Britain and France"], "correct": "Britain and France"}, {"q": "In what year were Trinidad and Tobago formally unified as one colony?", "options": ["1962", "1889", "1797", "1900"], "correct": "1889"}, {"q": "What system of forced labor brought large numbers of Indian workers to Trinidad after slavery ended?", "options": ["Indentureship", "Apprenticeship", "Sharecropping", "Conscription"], "correct": "Indentureship"}, {"q": "In what year was slavery abolished in the British Caribbean, including Trinidad and Tobago?", "options": ["1834", "1962", "1776", "1900"], "correct": "1834"}, {"q": "What event in 1990 saw an attempted overthrow of the Trinidad and Tobago government?", "options": ["The Butler Riots", "The Water Riots", "The Canboulay Riots", "The Jamaat al Muslimeen attempted coup"], "correct": "The Jamaat al Muslimeen attempted coup"}, {"q": "Which labor leader and 'Father of the Nation' figure led the 1937 oilfield workers' riots?", "options": ["Arthur Cipriani", "George Padmore", "Eric Williams", "Tubal Uriah 'Buzz' Butler"], "correct": "Tubal Uriah 'Buzz' Butler"}, {"q": "What was the name of the short-lived political union that included Trinidad and Tobago from 1958-1962?", "options": ["The Windward Alliance", "The Caribbean Union", "The British Antilles Federation", "The West Indies Federation"], "correct": "The West Indies Federation"}, {"q": "Which historic 1881 uprising is considered a precursor to Trinidad Carnival as we know it?", "options": ["The Canboulay Riots", "The Butler Riots", "The Water Riots", "The Chaguaramas Protest"], "correct": "The Canboulay Riots"}, {"q": "What indigenous people inhabited Trinidad before European contact?", "options": ["The Amerindians (including Arawak and Carib peoples)", "The Maya", "The Inca", "The Aztec"], "correct": "The Amerindians (including Arawak and Carib peoples)"}, {"q": "What type of government does Trinidad and Tobago have?", "options": ["An absolute monarchy", "A one-party state", "A military dictatorship", "A parliamentary republic"], "correct": "A parliamentary republic"}, {"q": "What is the name of Trinidad and Tobago's law-making body?", "options": ["The Assembly", "The Senate House", "Congress", "Parliament"], "correct": "Parliament"}, {"q": "Trinidad and Tobago's Parliament is made up of which two houses?", "options": ["The Senate and House of Representatives", "The Assembly and Congress", "The Upper and Lower Council", "The Cabinet and Court"], "correct": "The Senate and House of Representatives"}, {"q": "What body governs the internal affairs of Tobago?", "options": ["The Port of Spain Council", "The Tobago House of Assembly", "The Tobago Parliament", "The Trinidad Senate"], "correct": "The Tobago House of Assembly"}, {"q": "Who is the ceremonial Head of State of Trinidad and Tobago?", "options": ["The President", "The Chief Justice", "The Prime Minister", "The Governor-General"], "correct": "The President"}, {"q": "Who holds executive power and leads the government of Trinidad and Tobago?", "options": ["The Speaker", "The Prime Minister", "The President", "The Governor-General"], "correct": "The Prime Minister"}, {"q": "What is the highest court of appeal historically used by Trinidad and Tobago?", "options": ["The Supreme Court of Canada", "The US Supreme Court", "The International Court of Justice", "The Privy Council (UK)"], "correct": "The Privy Council (UK)"}, {"q": "What regional court did Trinidad and Tobago help establish, headquartered in Port of Spain?", "options": ["The Caribbean Supreme Court", "The Caribbean Court of Justice (CCJ)", "The Commonwealth Court", "The West Indies Tribunal"], "correct": "The Caribbean Court of Justice (CCJ)"}, {"q": "Trinidad and Tobago is a member of which regional economic and political grouping?", "options": ["The African Union", "The European Union", "CARICOM (Caribbean Community)", "ASEAN"], "correct": "CARICOM (Caribbean Community)"}, {"q": "What is the name of the national police force of Trinidad and Tobago?", "options": ["The Trinidad and Tobago Police Service (TTPS)", "The Civil Defence Force", "The National Guard", "The Royal Constabulary"], "correct": "The Trinidad and Tobago Police Service (TTPS)"}, {"q": "What is the name of the country's military organization?", "options": ["The Royal Regiment", "The National Army", "The Home Guard", "The Trinidad and Tobago Defence Force"], "correct": "The Trinidad and Tobago Defence Force"}, {"q": "Who oversees the Trinidad and Tobago Fire Service administratively?", "options": ["The Ministry of Health", "The Ministry of National Security", "The Ministry of Education", "The Ministry of Works"], "correct": "The Ministry of National Security"}, {"q": "What is the national instrument of Trinidad and Tobago?", "options": ["Guitar", "Sitar", "Steelpan", "Violin"], "correct": "Steelpan"}, {"q": "What is the currency of Trinidad and Tobago?", "options": ["The US Dollar", "The Trinidad and Tobago Dollar (TTD)", "The Euro", "The Eastern Caribbean Dollar"], "correct": "The Trinidad and Tobago Dollar (TTD)"}, {"q": "What are Trinidad and Tobago's national colours?", "options": ["Blue, white and red", "Red, white and black", "Green, gold and black", "Red, green and gold"], "correct": "Red, white and black"}, {"q": "What is the national flower of Trinidad and Tobago?", "options": ["The Hibiscus", "The Rose", "The Orchid", "The Chaconia"], "correct": "The Chaconia"}, {"q": "What is the national motto of Trinidad and Tobago?", "options": ["One Nation, One Destiny", "Together We Aspire, Together We Achieve", "Out of Many, One People", "Unity, Strength, Progress"], "correct": "Together We Aspire, Together We Achieve"}, {"q": "What are the two national birds of Trinidad and Tobago?", "options": ["The Hummingbird and the Hawk", "The Scarlet Ibis and the Cocrico", "The Eagle and the Owl", "The Parrot and the Toucan"], "correct": "The Scarlet Ibis and the Cocrico"}, {"q": "Which of the two national birds is specifically associated with Tobago?", "options": ["The Scarlet Ibis", "The Cocrico", "The Kiskadee", "The Hummingbird"], "correct": "The Cocrico"}, {"q": "Which of the two national birds is famously associated with the Caroni Swamp in Trinidad?", "options": ["The Scarlet Ibis", "The Hummingbird", "The Cocrico", "The Kingfisher"], "correct": "The Scarlet Ibis"}, {"q": "When was the National Anthem of Trinidad and Tobago composed?", "options": ["1962", "1990", "1976", "1834"], "correct": "1962"}, {"q": "Who composed the National Anthem, 'Forged from the Love of Liberty'?", "options": ["Patrick Castagne", "Winston 'Spree' Simon", "Eric Williams", "Lord Kitchener"], "correct": "Patrick Castagne"}, {"q": "What are the national 'watchwords' of Trinidad and Tobago, established by its first Prime Minister?", "options": ["Peace, Love, Harmony", "Freedom, Justice, Equality", "Unity, Faith, Discipline", "Discipline, Production, Tolerance"], "correct": "Discipline, Production, Tolerance"}, {"q": "Which two birds flank the shield on the Coat of Arms of Trinidad and Tobago?", "options": ["Doves", "Hawks", "The Scarlet Ibis and the Cocrico", "Eagles"], "correct": "The Scarlet Ibis and the Cocrico"}, {"q": "The Chaconia flower is also popularly known by what nickname?", "options": ["The Queen of the Caribbean", "The Pride of Trinidad and Tobago", "The Island Rose", "The Golden Bloom"], "correct": "The Pride of Trinidad and Tobago"}, {"q": "What globally famous festival is Trinidad and Tobago best known for?", "options": ["Songkran", "Oktoberfest", "Mardi Gras (as its own name)", "Carnival"], "correct": "Carnival"}, {"q": "In what decade was the steelpan invented in Trinidad?", "options": ["The 1930s", "The 1800s", "The 1990s", "The 1970s"], "correct": "The 1930s"}, {"q": "What were early steelpans made from?", "options": ["Bamboo stalks", "Clay pots", "Discarded oil drums", "Wooden barrels"], "correct": "Discarded oil drums"}, {"q": "What is the name of the pre-Carnival festival where people cover themselves in mud, paint, or oil early in the morning?", "options": ["Panorama", "Las Lap", "Dimanche Gras", "J'ouvert"], "correct": "J'ouvert"}, {"q": "What is the name of the national steelpan competition held during Carnival season?", "options": ["J'ouvert", "Parang Fest", "Soca Monarch", "Panorama"], "correct": "Panorama"}, {"q": "What competition crowns the best party/Carnival song of the year in Trinidad and Tobago?", "options": ["Panorama", "Road March", "Calypso Monarch", "Extempo Monarch"], "correct": "Road March"}, {"q": "What genre of music, meaning 'Soul of Calypso,' emerged from calypso in the 1970s?", "options": ["Chutney", "Zouk", "Reggae", "Soca"], "correct": "Soca"}, {"q": "Who is widely credited with creating soca music in the 1970s?", "options": ["Lord Shorty", "Machel Montano", "Sparrow", "Lord Kitchener"], "correct": "Lord Shorty"}, {"q": "What historic festival, involving drumming and dancing after Emancipation, is considered the precursor to modern Carnival?", "options": ["Parang", "Canboulay", "Panorama", "J'ouvert"], "correct": "Canboulay"}, {"q": "What Christmas-time musical tradition, brought by Venezuelan influence, is popular in Trinidad?", "options": ["Soca Gospel", "Chutney Soca", "Parang", "Rapso"], "correct": "Parang"}, {"q": "What is 'chutney music,' a genre popular in Trinidad and Tobago?", "options": ["A traditional dance with no music", "A form of steelpan jazz", "A fusion of Indian folk music with Caribbean rhythms", "A type of calypso poetry"], "correct": "A fusion of Indian folk music with Caribbean rhythms"}, {"q": "What dish, made from curried channa (chickpeas) and fried dough, is a famous Trinidadian street food?", "options": ["Pelau", "Roti", "Doubles", "Bake and shark"], "correct": "Doubles"}, {"q": "What is 'bake and shark,' a popular Trinidadian beach food?", "options": ["A type of stewed chicken", "A soup made with fish broth", "Fried shark served in fried bake (bread) with toppings", "A dessert made from bananas"], "correct": "Fried shark served in fried bake (bread) with toppings"}, {"q": "What rice-and-meat one-pot dish, often made with caramelized sugar, is a Trinidadian staple?", "options": ["Doubles", "Callaloo", "Roti", "Pelau"], "correct": "Pelau"}, {"q": "What leafy green dish, often made with dasheen leaves and coconut milk, is popular in Trinidad and Tobago?", "options": ["Pelau", "Sancoche", "Callaloo", "Doubles"], "correct": "Callaloo"}, {"q": "What is a 'roti' in Trinidadian cuisine?", "options": ["A flatbread often wrapped around curried filling", "A type of steelpan", "A carnival costume", "A festival dance"], "correct": "A flatbread often wrapped around curried filling"}, {"q": "The steelpan is recognized as the only major acoustic instrument invented in which century?", "options": ["The 19th century", "The 21st century", "The 18th century", "The 20th century"], "correct": "The 20th century"}, {"q": "What is the name for elaborate costumed Carnival performers and their art form?", "options": ["Mas (masquerade)", "Parang", "Chutney", "Limbo"], "correct": "Mas (masquerade)"}, {"q": "Which Trinidadian-born civil rights activist and writer co-founded the Pan-African movement and wrote extensively on colonialism?", "options": ["George Padmore", "V.S. Naipaul", "Eric Williams", "C.L.R. James"], "correct": "C.L.R. James"}, {"q": "Which Trinidad-born author won the Nobel Prize in Literature in 2001?", "options": ["Derek Walcott", "C.L.R. James", "Earl Lovelace", "V.S. Naipaul"], "correct": "V.S. Naipaul"}, {"q": "Which calypsonian, known as the 'Calypso King of the World,' is one of Trinidad's most celebrated musicians?", "options": ["Lord Kitchener", "Machel Montano", "David Rudder", "The Mighty Sparrow"], "correct": "The Mighty Sparrow"}, {"q": "Which soca artist is often called the 'King of Soca' and has dominated the Trinidad Carnival scene for decades?", "options": ["Lord Kitchener", "David Rudder", "The Mighty Sparrow", "Machel Montano"], "correct": "Machel Montano"}, {"q": "Which Trinidadian javelin thrower won Olympic gold at the 2012 London Olympics?", "options": ["Richard Thompson", "Ato Boldon", "Hasely Crawford", "Keshorn Walcott"], "correct": "Keshorn Walcott"}, {"q": "Which Trinidadian sprinter won Olympic gold in the 100m at the 1976 Montreal Olympics?", "options": ["Richard Thompson", "Ato Boldon", "Hasely Crawford", "Keshorn Walcott"], "correct": "Hasely Crawford"}, {"q": "Which Trinidadian sprinter won multiple Olympic medals in the 1990s-2000s and is a well-known sports commentator?", "options": ["Jehue Gordon", "Keshorn Walcott", "Hasely Crawford", "Ato Boldon"], "correct": "Ato Boldon"}, {"q": "Which Trinidadian hurdler won gold in the 400m hurdles at the 2013 World Championships in Moscow?", "options": ["Jehue Gordon", "Ato Boldon", "Hasely Crawford", "Keshorn Walcott"], "correct": "Jehue Gordon"}, {"q": "What sport is Brian Lara, one of Trinidad and Tobago's most famous athletes, associated with?", "options": ["Swimming", "Cricket", "Football (soccer)", "Athletics"], "correct": "Cricket"}, {"q": "Brian Lara famously holds the record for the highest individual score in what form of cricket?", "options": ["School-level cricket only", "Test cricket (and first-class cricket)", "One Day Internationals only", "T20 cricket only"], "correct": "Test cricket (and first-class cricket)"}, {"q": "Which sport is most closely tied to Trinidad and Tobago's regional identity through the West Indies team?", "options": ["Ice hockey", "Cricket", "Rugby", "Basketball"], "correct": "Cricket"}, {"q": "Trinidad and Tobago's men's football team qualified for their first (and so far only) FIFA World Cup in what year?", "options": ["1998", "2010", "2006", "1990"], "correct": "2006"}, {"q": "What has historically been Trinidad and Tobago's most important export industry?", "options": ["Fishing only", "Tourism only", "Sugar and cocoa only", "Oil and natural gas (petrochemicals)"], "correct": "Oil and natural gas (petrochemicals)"}, {"q": "Trinidad and Tobago is one of the largest exporters in the world of what liquefied product?", "options": ["Liquefied oxygen", "Liquefied Natural Gas (LNG)", "Liquefied hydrogen", "Liquefied coal"], "correct": "Liquefied Natural Gas (LNG)"}, {"q": "Historically, which two agricultural crops were central to Trinidad's colonial-era economy?", "options": ["Wheat and corn", "Coffee and tea", "Sugar and cocoa", "Rice and tobacco"], "correct": "Sugar and cocoa"}, {"q": "What is the name of Trinidad and Tobago's main stock exchange?", "options": ["The Trinidad and Tobago Stock Exchange (TTSE)", "The Caribbean Trade Exchange", "The Port of Spain Bourse", "The West Indies Exchange"], "correct": "The Trinidad and Tobago Stock Exchange (TTSE)"}, {"q": "Which of the two islands relies more heavily on tourism as its main economic driver?", "options": ["Tobago", "Trinidad", "Both equally", "Neither"], "correct": "Tobago"}, {"q": "What natural resource deposit, still mined today, made La Brea internationally famous?", "options": ["Gold", "Coal", "Asphalt/pitch", "Diamonds"], "correct": "Asphalt/pitch"}, {"q": "What is the general emergency telephone number for the Fire Service in Trinidad and Tobago?", "options": ["990", "112", "911", "999"], "correct": "990"}, {"q": "What is the general emergency telephone number for the Police in Trinidad and Tobago?", "options": ["911", "112", "990", "999"], "correct": "999"}, {"q": "What is the general emergency telephone number for Ambulance services in Trinidad and Tobago?", "options": ["990", "999", "811", "911"], "correct": "811"}, {"q": "Which government ministry has primary responsibility for the Trinidad and Tobago Fire Service?", "options": ["The Ministry of National Security", "The Ministry of Energy", "The Ministry of Health", "The Ministry of Works and Transport"], "correct": "The Ministry of National Security"}, {"q": "What class of fire extinguisher is designed specifically for flammable liquid fires?", "options": ["Class C", "Class D", "Class A", "Class B"], "correct": "Class B"}, {"q": "What class of fire extinguisher is designed specifically for ordinary combustibles like wood and paper?", "options": ["Class B", "Class A", "Class C", "Class D"], "correct": "Class A"}, {"q": "What is the main purpose of a smoke detector in a home or building?", "options": ["To extinguish fires automatically", "To detect smoke and alert occupants", "To cool down a room", "To purify indoor air"], "correct": "To detect smoke and alert occupants"}, {"q": "What does the acronym 'CPR' stand for in emergency medical response?", "options": ["Critical Patient Response", "Continuous Pressure Relief", "Cardiac Pulse Rate", "Cardiopulmonary Resuscitation"], "correct": "Cardiopulmonary Resuscitation"}, {"q": "What large native cat, now rare, is found in Trinidad's forests?", "options": ["The lion", "The ocelot", "The cheetah", "The jaguar"], "correct": "The ocelot"}, {"q": "What venomous snake, found in Trinidad, is one of the deadliest pit vipers in the region?", "options": ["The Boa Constrictor", "The Garden Snake", "The Coral Snake", "The Fer-de-lance (Mapepire)"], "correct": "The Fer-de-lance (Mapepire)"}, {"q": "What large flightless bird sanctuary is Trinidad's Caroni Swamp especially known for protecting?", "options": ["A penguin colony", "An ostrich farm", "The Scarlet Ibis roosting site", "A flamingo breeding ground"], "correct": "The Scarlet Ibis roosting site"}, {"q": "What is the name of the leatherback turtle nesting beach on Trinidad's north-east coast?", "options": ["Store Bay", "Maracas Bay", "Grande Riviere", "Pigeon Point"], "correct": "Grande Riviere"}, {"q": "What is Trinidad's most popular and well-known beach, close to Port of Spain?", "options": ["Englishman's Bay", "Store Bay", "Pigeon Point", "Maracas Bay"], "correct": "Maracas Bay"}, {"q": "What popular Tobago beach is famous for its calm, clear waters and is close to the airport?", "options": ["Store Bay", "Maracas Bay", "Manzanilla", "Grande Riviere"], "correct": "Store Bay"}, {"q": "Which long, palm-lined beach runs along Trinidad's east coast?", "options": ["Maracas Bay", "Store Bay", "Pigeon Point", "Manzanilla Beach"], "correct": "Manzanilla Beach"}, {"q": "What fishing village in north-east Trinidad is known as a gateway to the Toco lighthouse?", "options": ["Blanchisseuse", "Mayaro", "Moruga", "Toco"], "correct": "Toco"}, {"q": "What is the name of the dance associated with Trinidadian wakes, involving dancers bending backward under a bar?", "options": ["The Foxtrot", "The Tango", "The Waltz", "The Limbo"], "correct": "The Limbo"}, {"q": "What is the name for Trinidad's traditional stickfighting martial art, tied to Carnival history?", "options": ["Judo", "Karate", "Kalinda (Calinda)", "Capoeira"], "correct": "Kalinda (Calinda)"}, {"q": "What is a 'Moko Jumbie,' a traditional Carnival character?", "options": ["A masquerade judge", "A costumed stilt-walker", "A calypso singer", "A steelpan drummer"], "correct": "A costumed stilt-walker"}, {"q": "What is 'Midnight Robber,' a traditional Trinidad Carnival costume character known for dramatic speeches?", "options": ["A masquerade character dressed in an elaborate wide-brimmed costume", "A type of steelpan", "A folk dance", "A carnival food vendor"], "correct": "A masquerade character dressed in an elaborate wide-brimmed costume"}, {"q": "Who was Trinidad and Tobago's first female Prime Minister?", "options": ["Kamla Persad-Bissessar", "Pennelope Beckles", "Christine Kangaloo", "Paula-Mae Weekes"], "correct": "Kamla Persad-Bissessar"}, {"q": "Who was Trinidad and Tobago's first female President?", "options": ["Paula-Mae Weekes", "Kamla Persad-Bissessar", "Pearlette Louisy", "Christine Kangaloo"], "correct": "Paula-Mae Weekes"}, {"q": "What year did Trinidad and Tobago last host the FIFA Under-17 World Cup?", "options": ["2010", "1998", "1991", "2001"], "correct": "2001"}, {"q": "What sport does former World and Olympic medalist Ato Boldon compete in?", "options": ["Cricket", "Athletics (sprinting)", "Football", "Swimming"], "correct": "Athletics (sprinting)"}, {"q": "What is the name of Trinidad and Tobago's national football team's nickname?", "options": ["The Soca Warriors", "The Reggae Boyz", "The Warriors", "The Calypso Kings"], "correct": "The Soca Warriors"}, {"q": "Which sport features prominently in Trinidad and Tobago's regional pride through the West Indies cricket team?", "options": ["Cricket", "Field hockey", "Baseball", "Rugby"], "correct": "Cricket"}, {"q": "What is 'Kurma,' a popular Trinidadian sweet often eaten around Divali?", "options": ["A carnival costume", "A type of steelpan music", "Fried dough coated in sugar syrup", "A curried meat dish"], "correct": "Fried dough coated in sugar syrup"}, {"q": "Which major Hindu festival of lights is widely celebrated in Trinidad and Tobago?", "options": ["Divali (Diwali)", "Eid", "Christmas", "Easter"], "correct": "Divali (Diwali)"}, {"q": "Which major Islamic festival, marking the end of Ramadan, is a public holiday in Trinidad and Tobago?", "options": ["Divali", "Eid-ul-Fitr", "Emancipation Day", "Indian Arrival Day"], "correct": "Eid-ul-Fitr"}, {"q": "What public holiday commemorates the arrival of Indian indentured labourers to Trinidad in 1845?", "options": ["Divali", "Indian Arrival Day", "Republic Day", "Emancipation Day"], "correct": "Indian Arrival Day"}, {"q": "What public holiday on August 1st commemorates the end of slavery in the British Caribbean?", "options": ["Emancipation Day", "Republic Day", "Independence Day", "Indian Arrival Day"], "correct": "Emancipation Day"}, {"q": "On what date is Trinidad and Tobago's Independence Day celebrated?", "options": ["August 31st", "November 19th", "August 1st", "September 24th"], "correct": "August 31st"}, {"q": "On what date is Trinidad and Tobago's Republic Day celebrated?", "options": ["September 24th", "August 31st", "August 1st", "November 19th"], "correct": "September 24th"}, {"q": "What is the ship that first brought Indian indentured labourers to Trinidad in 1845?", "options": ["The Santa Maria", "The Fatel Razack", "The HMS Beagle", "The Mayflower"], "correct": "The Fatel Razack"}, {"q": "What is the name of Trinidad's tallest building, located in Port of Spain?", "options": ["The Nicholas Tower", "The Hyatt Regency Trinidad", "The Twin Towers", "The Central Bank Tower"], "correct": "The Nicholas Tower"}, {"q": "What is the name of the twin skyscrapers that house Trinidad and Tobago's Ministry of Finance?", "options": ["The Central Bank Building", "The Waterfront Complex", "The Twin Towers (Eric Williams Financial Complex)", "The Nicholas Tower"], "correct": "The Twin Towers (Eric Williams Financial Complex)"}, {"q": "Which university, founded in Trinidad, is a major regional institution serving the English-speaking Caribbean?", "options": ["The University of the West Indies (UWI)", "Oxford University", "Howard University", "The University of Trinidad and Tobago (UTT) only"], "correct": "The University of the West Indies (UWI)"}, {"q": "What is the name of Trinidad and Tobago's national library and archive system?", "options": ["NALIS (National Library and Information System Authority)", "The Trinidad Archive Bureau", "The Caribbean Library Council", "The National Records Office"], "correct": "NALIS (National Library and Information System Authority)"}, {"q": "What language, alongside English, is widely spoken informally across Trinidad and Tobago?", "options": ["Portuguese", "Trinidadian English Creole", "Dutch", "Mandarin"], "correct": "Trinidadian English Creole"}, {"q": "Which language, brought by Indian indentured labourers, survives today mainly in songs and religious practice in Trinidad?", "options": ["Mandarin", "Trinidadian Hindustani (Bhojpuri-based)", "Swahili", "Tagalog"], "correct": "Trinidadian Hindustani (Bhojpuri-based)"}, {"q": "What is 'Best Village,' a long-running Trinidad and Tobago cultural competition?", "options": ["A carnival costume contest only", "A community folk performance and culture competition", "A cooking show", "A sports tournament"], "correct": "A community folk performance and culture competition"}, {"q": "What annual event showcases young calypso talent under the title 'Junior Monarch'?", "options": ["A steelpan repair contest", "A carnival costume parade for children only", "A junior calypso competition", "A school sports day"], "correct": "A junior calypso competition"}]
+};
+
+const CATEGORY_META = {
+  math: {name:"Math", icon:"➗"},
+  english: {name:"English", icon:"📖"},
+  gk: {name:"General Knowledge", icon:"🌍"}
+};
+
+/* ---------- Persistent high scores ---------- */
+const STORAGE_KEY = "fse_highscores_v1";
+function loadScores(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {math:0, english:0, gk:0};
+    return JSON.parse(raw);
+  }catch(e){
+    return {math:0, english:0, gk:0};
+  }
+}
+function saveScores(scores){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(scores)); }catch(e){}
+}
+let highScores = loadScores();
+
+/* ---------- App state ---------- */
+let state = {
+  category: null,
+  questions: [],   // shuffled copy for this attempt, options shuffled too
+  answers: [],     // selected option text per question, or null
+  current: 0
+};
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+const TEST_LENGTH = 40;
+
+function buildQuiz(category){
+  const bank = QUESTION_BANKS[category];
+  const pool = shuffle(bank).slice(0, Math.min(TEST_LENGTH, bank.length));
+  const shuffledQs = pool.map(item=>({
+    q:item.q,
+    correct:item.correct,
+    options:shuffle(item.options)
+  }));
+  state.category = category;
+  state.questions = shuffledQs;
+  state.answers = new Array(shuffledQs.length).fill(null);
+  state.current = 0;
+}
+
+/* ---------- Screen switching ---------- */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+/* ---------- Home rendering ---------- */
+function overallHighScore(){
+  const vals = Object.values(highScores);
+  return vals.length ? Math.max(...vals) : 0;
+}
+
+function renderHome(){
+  document.getElementById("home-highscore").textContent = overallHighScore() + "%";
+  const list = document.getElementById("cat-list");
+  list.innerHTML = "";
+  Object.keys(CATEGORY_META).forEach(key=>{
+    const meta = CATEGORY_META[key];
+    const best = highScores[key] || 0;
+    const div = document.createElement("div");
+    div.className = "cat-card";
+    div.innerHTML = `
+      <div class="cat-icon">${meta.icon}</div>
+      <div class="cat-info">
+        <div class="name">${meta.name}</div>
+        <div class="meta">40 questions per test · from a pool of ${QUESTION_BANKS[key].length}</div>
+        <div class="cat-best">${best > 0 ? "Best score: " + best + "%" : "Not attempted yet"}</div>
+      </div>
+      <div class="chevron">›</div>
+    `;
+    div.addEventListener("click", ()=>{
+      buildQuiz(key);
+      showScreen("screen-quiz");
+      renderQuestion();
+    });
+    list.appendChild(div);
+  });
+}
+
+/* ---------- Quiz rendering ---------- */
+function renderQuestion(){
+  const total = state.questions.length;
+  const i = state.current;
+  const item = state.questions[i];
+
+  document.getElementById("quiz-cat-label").textContent = CATEGORY_META[state.category].name;
+  document.getElementById("progress-fill").style.width = (((i+1)/total)*100) + "%";
+  document.getElementById("progress-text").textContent = `Question ${i+1} of ${total}`;
+  document.getElementById("q-number").textContent = `QUESTION ${i+1}`;
+  document.getElementById("q-text").textContent = item.q;
+
+  const container = document.getElementById("options-container");
+  container.innerHTML = "";
+  const letters = ["A","B","C","D"];
+  item.options.forEach((opt, idx)=>{
+    const btn = document.createElement("button");
+    btn.className = "option-btn" + (state.answers[i] === opt ? " selected" : "");
+    btn.innerHTML = `<span class="letter">${letters[idx]}</span><span>${opt}</span>`;
+    btn.addEventListener("click", ()=>{
+      state.answers[i] = opt;
+      renderQuestion();
+    });
+    container.appendChild(btn);
+  });
+
+  document.getElementById("prev-btn").disabled = (i === 0);
+  const skipBtn = document.getElementById("skip-btn");
+  skipBtn.textContent = (i === total-1) ? "Review all →" : "Skip →";
+}
+
+document.getElementById("prev-btn").addEventListener("click", ()=>{
+  if(state.current > 0){ state.current--; renderQuestion(); }
+});
+document.getElementById("skip-btn").addEventListener("click", ()=>{
+  if(state.current < state.questions.length - 1){
+    state.current++;
+    renderQuestion();
+  } else {
+    renderReview();
+    showScreen("screen-review");
+  }
+});
+document.getElementById("review-link-btn").addEventListener("click", ()=>{
+  renderReview();
+  showScreen("screen-review");
+});
+document.getElementById("quiz-home-btn").addEventListener("click", ()=>{
+  renderHome();
+  showScreen("screen-home");
+});
+document.getElementById("review-back-btn").addEventListener("click", ()=>{
+  showScreen("screen-quiz");
+  renderQuestion();
+});
+
+/* ---------- Review grid ---------- */
+function renderReview(){
+  const total = state.questions.length;
+  const answeredCount = state.answers.filter(a=>a!==null).length;
+  document.getElementById("review-summary").textContent =
+    `${answeredCount} of ${total} answered · tap any number to jump to that question`;
+
+  const grid = document.getElementById("review-grid");
+  grid.innerHTML = "";
+  for(let i=0;i<total;i++){
+    const cell = document.createElement("div");
+    cell.className = "review-cell" + (state.answers[i]!==null ? " answered" : "") + (i===state.current ? " current" : "");
+    cell.textContent = i+1;
+    cell.addEventListener("click", ()=>{
+      state.current = i;
+      showScreen("screen-quiz");
+      renderQuestion();
+    });
+    grid.appendChild(cell);
+  }
+}
+
+document.getElementById("submit-btn").addEventListener("click", ()=>{
+  gradeAndShowResults();
+});
+
+/* ---------- Grading & results ---------- */
+function gradeAndShowResults(){
+  const total = state.questions.length;
+  let correctCount = 0;
+  state.questions.forEach((item,i)=>{
+    if(state.answers[i] === item.correct) correctCount++;
+  });
+  const pct = Math.round((correctCount/total)*100);
+
+  const prevBest = highScores[state.category] || 0;
+  const isNewBest = pct > prevBest;
+  if(isNewBest){
+    highScores[state.category] = pct;
+    saveScores(highScores);
+  }
+
+  document.getElementById("new-best-container").innerHTML = isNewBest
+    ? `<div class="new-best-badge">🔥 New personal best!</div>` : "";
+
+  document.getElementById("score-pct").textContent = pct + "%";
+  document.getElementById("score-fraction").textContent = `${correctCount} / ${total} correct`;
+
+  const ring = document.getElementById("score-ring");
+  const ringColor = pct >= 70 ? "#3ecf8e" : pct >= 50 ? "#ffbf3d" : "#ff5d5d";
+  ring.style.background = `conic-gradient(${ringColor} ${pct*3.6}deg, #2a2732 0deg)`;
+  ring.style.boxShadow = `0 0 0 8px ${ringColor}22`;
+  const inner = document.createElement("div");
+
+  let msg, detail;
+  if(pct >= 85){ msg = "Outstanding work!"; }
+  else if(pct >= 70){ msg = "Great job — solid pass!"; }
+  else if(pct >= 50){ msg = "Good effort — keep practicing."; }
+  else { msg = "Keep studying — you'll get there."; }
+  detail = `${CATEGORY_META[state.category].name} · ${total - correctCount} question${(total-correctCount)===1?"":"s"} to review below`;
+
+  document.getElementById("score-msg").textContent = msg;
+  document.getElementById("score-detail").textContent = detail;
+
+  const listEl = document.getElementById("answer-review-list");
+  listEl.innerHTML = "";
+  state.questions.forEach((item,i)=>{
+    const given = state.answers[i];
+    const wasCorrect = given === item.correct;
+    const div = document.createElement("div");
+    div.className = "answer-review-item";
+    div.innerHTML = `
+      <div class="qi-num">QUESTION ${i+1} ${wasCorrect ? "✅" : "❌"}</div>
+      <div class="qi-q">${item.q}</div>
+      <div class="qi-row ${wasCorrect ? 'correct' : 'wrong'}">
+        <span class="tag">Your answer:</span><span class="val">${given !== null ? given : "Skipped / no answer"}</span>
+      </div>
+      ${wasCorrect ? "" : `<div class="qi-row correct"><span class="tag">Correct answer:</span><span class="val">${item.correct}</span></div>`}
+    `;
+    listEl.appendChild(div);
+  });
+
+  showScreen("screen-results");
+}
+
+document.getElementById("try-again-btn").addEventListener("click", ()=>{
+  buildQuiz(state.category);
+  showScreen("screen-quiz");
+  renderQuestion();
+});
+document.getElementById("results-home-btn").addEventListener("click", ()=>{
+  renderHome();
+  showScreen("screen-home");
+});
+
+/* ---------- Init ---------- */
+renderHome();
+</script>
+</body>
+</html>
